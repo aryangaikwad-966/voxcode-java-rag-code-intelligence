@@ -1,0 +1,33 @@
+version: '3.8'
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: voxcode-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-voxcode_db}
+      MYSQL_USER: ${MYSQL_USER:-voxcode_user}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-voxcode_pass}
+    ports:
+      - "3306:3306"
+    volumes:
+      - voxcode-mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+    restart: unless-stopped
+
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: voxcode-qdrant
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - voxcode-qdrant-data:/qdrant/storage
+    restart: unless-stopped
+
+volumes:
+  voxcode-mysql-data:
+  voxcode-qdrant-data:
