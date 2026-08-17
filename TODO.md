@@ -1,5 +1,34 @@
 # VoxCode Implementation TODO
 
+## Project Identity
+
+**VoxCode — Agentic Java RAG Intelligence**
+
+VoxCode is an Agentic AI system for Java/Spring repository intelligence that uses AST analysis, dependency analysis, and RAG to investigate engineering problems, gather and validate evidence, create engineering plans, perform human-approved bounded remediation, and verify or roll back changes.
+
+**Core Principle:**
+Understand → Retrieve → Investigate → Prove → Plan → Act → Verify
+
+**Core Thesis:**
+"Understand before changing, prove before acting, and verify after acting."
+
+**Architectural Flow:**
+Repository → Repository Intelligence (AST + Dependency Graph + Repository Index) → Hybrid Repository-Aware RAG → One Adaptive Primary Agent → Evidence Engine → Finding Validation → Engineering Plan → Human Approval → Bounded Remediation → MCP/Tool Interface → Isolated Docker Workspace → Build + Tests + Static Analysis + Diff/Scope Validation → PASS (Accept) / FAIL (Bounded Repair) / FAIL after retry budget (Rollback) → Engineering Report → Evaluation
+
+**Technology Scope (LOCKED):**
+- **Backend:** Java 21, Spring Boot, Maven, Spring AI
+- **Agentic AI:** One adaptive primary agent, tool calling, structured agent state, persisted decision/engineering traces
+- **RAG:** Embeddings, Qdrant, hybrid retrieval (vector + lexical + metadata/symbol + dependency-aware), reranking, context assembly, agentic retrieval, RAG evaluation and ablation
+- **Repository Intelligence:** JavaParser for AST/program structure, JGraphT for dependency relationships, Repository Index for unified querying
+- **MCP:** Focused MCP server/interface exposing only useful VoxCode capabilities/tools (NOT a separate architecture)
+- **Remediation:** OpenRewrite for deterministic Java/Spring transformations where appropriate, AI-generated targeted patches only when deterministic transformation is insufficient
+- **Execution:** Docker sandbox, controlled build/test execution, resource limits, restricted filesystem/network access
+- **Database:** MySQL for application state, findings, plans, approvals, traces, reports
+- **Security:** Spring Security, authentication/authorization, repository isolation, path traversal protection, secret filtering, prompt-injection defenses, unsafe command protection
+- **Testing:** JUnit 5, Mockito, Testcontainers
+- **Frontend:** React
+- **CI/CD:** Git, GitHub, GitHub Actions, Pull Requests, branch protection, automated quality gates
+
 ## Project Rules
 - **Scope Protection:** VoxCode is a one-year bounded project. No feature creep. No multi-agent architecture (one primary agent only), no general-purpose coding assistants, no graph RAG, Kubernetes, Kafka, or Redis without absolute justification.
 - **Primary Capabilities:** Investigation and Bounded Remediation are EQUAL, first-class capabilities. Investigation discovers, analyzes and proves repository problems. Remediation applies targeted fixes to confirmed findings.
@@ -40,10 +69,12 @@ Before investigation or remediation begins, VoxCode must classify every develope
 ## Architecture Invariants
 - **Backend:** Java 21, Spring Boot, Maven, Spring Security. Modular monolith structure.
 - **AI/LLM:** Spring AI, semantic embeddings, Qdrant for vector storage. ONE primary adaptive agent/orchestrator.
-- **Intelligence:** JavaParser (AST), JGraphT (Dependency Graph). RAG is for semantic context, not structural truth.
+- **Intelligence:** JavaParser (AST), JGraphT (Dependency Graph), Repository Index. RAG is for semantic context, not structural truth.
+- **RAG:** Hybrid retrieval (vector + lexical + metadata/symbol + dependency-aware), reranking, context assembly. NOT just chunk→embed→top-K.
 - **Execution:** Docker-based isolated workspaces for code modification, build, and tests.
 - **Frontend:** React-based dashboard (Near-black + Neon green aesthetic).
-- **Database:** MySQL for application state (investigations, traces, findings, etc.).
+- **Database:** MySQL for application state (investigations, traces, findings, plans, approvals, reports).
+- **MCP:** Focused tool interface for interoperability, NOT a separate architecture or ecosystem.
 
 ## Definition of Done
 Every task is only "Done" when:
@@ -57,14 +88,16 @@ Every task is only "Done" when:
 This describes the phased development approach for building the VoxCode software itself. See "Cross-Cutting Requirements — Professional Git & GitHub Development Workflow" for the Git/GitHub practices developers must follow while implementing these phases.
 
 1. Start with foundation and repository ingestion.
-2. Build intelligence layers (AST, Graph, RAG).
-3. Develop Agent Tools.
-4. Implement Adaptive Investigation Agent and Evidence Engine.
-5. Create Planning and Human Approval layers.
-6. Implement Bounded Remediation and Execution/Verification layers.
-7. Connect the Frontend UI.
-8. Continuously measure with Evaluation/Benchmark tests.
-9. Release.
+2. Build intelligence layers (AST, Graph, Repository Index).
+3. Develop hybrid RAG with retrieval evaluation.
+4. Develop Agent Tools.
+5. Implement focused MCP tool interface.
+6. Implement Adaptive Investigation Agent and Evidence Engine.
+7. Create Planning and Human Approval layers.
+8. Implement Bounded Remediation and Execution/Verification layers.
+9. Connect the Frontend UI.
+10. Continuously measure with Evaluation/Benchmark tests.
+11. Release.
 
 ---
 
@@ -334,7 +367,7 @@ CI:
 
 ---
 
-## Phase 7 — Supporting RAG
+## Phase 7 — Hybrid Repository-Aware RAG
 
 ### VXC-070 — RAG Pipeline Setup
 Priority: P1
@@ -342,23 +375,31 @@ Phase: 7
 Dependencies: VXC-002, VXC-060
 
 Goal:
-Implement vector-based semantic retrieval for repository documentation.
+Implement deep hybrid retrieval for repository semantic context. NOT just chunk→embed→top-K.
 
 Tasks:
 - Configure Spring AI with an Embedding Model.
-- Implement document parsing and chunking strategy (Markdown, comments).
+- Implement document parsing and chunking strategy (Markdown, comments, code blocks).
 - Configure Qdrant vector store integration.
-- Store vectors with metadata (repositoryId, documentType).
-- Implement semantic retrieval logic (Top-K, similarity thresholds).
+- Store vectors with rich metadata (repositoryId, documentType, symbolInfo, filePath, className, methodName).
+- Implement hybrid retrieval combining:
+  - Vector retrieval (semantic similarity)
+  - Lexical retrieval (keyword/BM25)
+  - Metadata/symbol retrieval (exact matches on classes, methods, annotations)
+  - Dependency-aware retrieval (context from related components)
+- Implement reranking (cross-encoder or similar) to improve relevance.
+- Implement context assembly that balances multiple retrieval sources.
+- Support retrieval for: Documentation, README, Comments, Similar implementations, Related classes/methods, Tests, Configuration, Error handling patterns, Cross-file semantic context.
 
 Deliverables:
-- `RagService` for embedding and retrieval.
+- `RagService` for embedding, hybrid retrieval, reranking, and context assembly.
 
 Definition of Done:
-- System chunks and embeds READMEs/Docs, stores them in Qdrant, and retrieves relevant chunks via semantic search.
+- System chunks and embeds repository content, stores with rich metadata in Qdrant, and retrieves relevant context via hybrid retrieval with reranking and context assembly.
 
 Tests:
-- Integration tests with local Qdrant container.
+- Integration tests with local Qdrant container for each retrieval source.
+- Reranking effectiveness tests.
 
 CI:
 - Tests run against Testcontainers Qdrant.
@@ -373,18 +414,31 @@ Phase: 8
 Dependencies: VXC-070
 
 Goal:
-Prove the value of RAG through metrics.
+Prove the value of RAG through quantitative metrics and ablation study.
 
 Tasks:
 - Create a benchmark dataset of expected semantic queries vs ground-truth chunks.
-- Implement an evaluation script measuring Recall@K and latency.
-- Set up an ablation test (AST+Graph vs AST+Graph+RAG).
+- Implement an evaluation script measuring:
+  - Recall@K
+  - Precision@K
+  - MRR (Mean Reciprocal Rank)
+  - NDCG (Normalized Discounted Cumulative Gain)
+  - Retrieval relevance
+  - Retrieval latency
+  - Context relevance
+  - Token efficiency
+  - Investigation success
+- Set up an ablation study comparing:
+  - Baseline: AST + Dependency Graph + Agent
+  - Full: AST + Dependency Graph + RAG + Agent
+- Demonstrate whether RAG actually improves repository investigation.
 
 Deliverables:
-- Benchmark execution suite.
+- Benchmark execution suite with quantitative metrics.
+- Ablation study results showing RAG impact.
 
 Definition of Done:
-- Running the benchmark outputs precision/recall scores for the RAG pipeline.
+- Running the benchmark outputs comprehensive metrics and ablation results demonstrating RAG's actual value.
 
 Tests:
 - RAG evaluation tests exist in a separate suite.
@@ -399,7 +453,7 @@ CI:
 ### VXC-090 — Core Agent Tools
 Priority: P0
 Phase: 9
-Dependencies: VXC-060, VXC-070
+Dependencies: VXC-060, VXC-070, VXC-080
 
 Goal:
 Expose deterministic capabilities as typed tools for the LLM.
@@ -427,12 +481,51 @@ CI:
 
 ---
 
-## Phase 10 — Adaptive Investigation Agent
+## Phase 10 — MCP Tool Interface
+
+### VXC-095 — Focused MCP Server
+Priority: P1
+Phase: 10
+Dependencies: VXC-090
+
+Goal:
+Implement a focused MCP interface for tool interoperability. MCP is a tool interface, NOT a separate architecture.
+
+Tasks:
+- Implement a focused MCP server exposing only useful VoxCode capabilities.
+- Define MCP tools for:
+  - Repository search
+  - File inspection
+  - AST analysis
+  - Dependency analysis
+  - Semantic retrieval
+  - Build
+  - Test
+  - Verification
+- Ensure MCP tools are bounded and safe.
+- Do NOT create a large MCP ecosystem, dozens of servers, or MCP-based microservices.
+- Use MCP only where it provides genuine architectural value for interoperability.
+
+Deliverables:
+- Focused MCP server with bounded tool interface.
+
+Definition of Done:
+- MCP server exposes defined tools safely and integrates with VoxCode's agent tools layer without creating architectural bloat.
+
+Tests:
+- Integration tests for MCP tool invocation.
+
+CI:
+- Included.
+
+---
+
+## Phase 11 — Adaptive Investigation Agent
 
 ### VXC-100 — Core Investigation Loop
 Priority: P0
-Phase: 10
-Dependencies: VXC-090
+Phase: 11
+Dependencies: VXC-095
 
 Goal:
 Implement lightweight classification and the Request → Hypothesis → Tool → Observation → Evidence → Decision → Finding loop.
@@ -443,6 +536,8 @@ Tasks:
 - Explicitly reject `OUT_OF_SCOPE` feature requests (stop). For `INVESTIGATE`, stop after finding. For `REMEDIATE`, validate and confirm finding even if discovery is skipped.
 - Define structured agent state and decision traces in MySQL.
 - Implement a loop that forces the LLM to output structured `InvestigationDecision` objects (action, tool, reason, confidence) without exposing hidden chain-of-thought.
+- The agent must be able to determine that current evidence is insufficient and request additional retrieval/tool calls.
+- The agent must genuinely adapt based on tool observations.
 - Persist the investigation trace to the database for observability.
 
 Deliverables:
@@ -459,11 +554,11 @@ CI:
 
 ---
 
-## Phase 11 — Agent Evaluation
+## Phase 12 — Agent Evaluation
 
 ### VXC-110 — Agent Benchmark
 Priority: P1
-Phase: 11
+Phase: 12
 Dependencies: VXC-100
 
 Goal:
@@ -488,12 +583,12 @@ CI:
 
 ---
 
-## Phase 12 — Evidence Engine
+## Phase 13 — Evidence Engine
 
 ### VXC-120 — Structured Evidence Model
 Priority: P0
-Phase: 12
-Dependencies: VXC-100
+Phase: 13
+Dependencies: VXC-110
 
 Goal:
 Link LLM findings to deterministic repository artifacts.
@@ -517,11 +612,11 @@ CI:
 
 ---
 
-## Phase 13 — Finding Validation
+## Phase 14 — Finding Validation
 
 ### VXC-130 — Evidence Verification
 Priority: P0
-Phase: 13
+Phase: 14
 Dependencies: VXC-120
 
 Goal:
@@ -545,11 +640,11 @@ CI:
 
 ---
 
-## Phase 14 — Engineering Planning
+## Phase 15 — Engineering Planning
 
 ### VXC-140 — Plan Generation
 Priority: P0
-Phase: 14
+Phase: 15
 Dependencies: VXC-130
 
 Goal:
@@ -575,11 +670,11 @@ CI:
 
 ---
 
-## Phase 15 — Human Approval
+## Phase 16 — Human Approval
 
 ### VXC-150 — Approval Gate
 Priority: P0
-Phase: 15
+Phase: 16
 Dependencies: VXC-140
 
 Goal:
@@ -605,11 +700,11 @@ CI:
 
 ---
 
-## Phase 16 — Bounded Remediation
+## Phase 17 — Bounded Remediation
 
 ### VXC-160 — Safe Code Modification
 Priority: P0
-Phase: 16
+Phase: 17
 Dependencies: VXC-150
 
 Goal:
@@ -617,10 +712,10 @@ Apply approved fixes safely as a core, first-class product capability.
 
 Tasks:
 - Implement `RemediationService` capable of applying changes.
-- Prioritize transformations in this exact order: 
-  1. Deterministic transformation (OpenRewrite/JavaParser)
+- Prioritize transformations in this exact order:
+  1. Deterministic transformation using OpenRewrite when appropriate for Java/Spring transformations
   2. AST-aware transformation
-  3. AI-assisted targeted patch only when deterministic transformation is insufficient.
+  3. AI-generated targeted patch only when deterministic transformation is insufficient
 - Never use unrestricted LLM text replacement as the default mechanism.
 - Every modification MUST: operate only inside the approved workspace, remain within approved files/scope, produce a diff, preserve unrelated code, and be traceable to the plan.
 - The remediation engine must detect unexpected modifications. If the actual diff contains files or changes outside the approved scope -> FAIL, do NOT accept, ROLLBACK.
@@ -640,11 +735,11 @@ CI:
 
 ---
 
-## Phase 17 — Docker Sandbox
+## Phase 18 — Docker Sandbox
 
 ### VXC-170 — Isolated Workspace Execution
 Priority: P0
-Phase: 17
+Phase: 18
 Dependencies: VXC-160
 
 Goal:
@@ -669,11 +764,11 @@ CI:
 
 ---
 
-## Phase 18 — Build/Test/Static Verification
+## Phase 19 — Build/Test/Static Verification
 
 ### VXC-180 — Executable Verification
 Priority: P0
-Phase: 18
+Phase: 19
 Dependencies: VXC-170
 
 Goal:
@@ -705,11 +800,11 @@ CI:
 
 ---
 
-## Phase 19 — Limited Repair
+## Phase 20 — Limited Repair
 
 ### VXC-190 — Bounded Repair Loop
 Priority: P1
-Phase: 19
+Phase: 20
 Dependencies: VXC-180
 
 Goal:
@@ -737,11 +832,11 @@ CI:
 
 ---
 
-## Phase 20 — Rollback
+## Phase 21 — Rollback
 
 ### VXC-200 — State Preservation and Recovery
 Priority: P0
-Phase: 20
+Phase: 21
 Dependencies: VXC-190
 
 Goal:
@@ -771,11 +866,11 @@ CI:
 
 ---
 
-## Phase 21 — Engineering Report
+## Phase 22 — Engineering Report
 
 ### VXC-210 — Report Generation
 Priority: P0
-Phase: 21
+Phase: 22
 Dependencies: VXC-200
 
 Goal:
@@ -799,11 +894,11 @@ CI:
 
 ---
 
-## Phase 22 — Observability
+## Phase 23 — Observability
 
 ### VXC-220 — Telemetry and Metrics
 Priority: P1
-Phase: 22
+Phase: 23
 Dependencies: VXC-210
 
 Goal:
@@ -828,11 +923,11 @@ CI:
 
 ---
 
-## Phase 23 — Security Hardening
+## Phase 24 — Security Hardening
 
 ### VXC-230 — System Security Hardening
 Priority: P0
-Phase: 23
+Phase: 24
 Dependencies: VXC-001
 
 Goal:
@@ -858,11 +953,11 @@ CI:
 
 ---
 
-## Phase 24 — Frontend
+## Phase 25 — Frontend
 
 ### VXC-240 — UI Foundation and Repository Overview
 Priority: P0
-Phase: 24
+Phase: 25
 Dependencies: VXC-030, VXC-060
 
 Goal:
@@ -875,7 +970,7 @@ Tasks:
 
 ### VXC-241 — Investigation and Trace UI
 Priority: P0
-Phase: 24
+Phase: 25
 Dependencies: VXC-100, VXC-120
 
 Goal:
@@ -887,7 +982,7 @@ Tasks:
 
 ### VXC-242 — Planning and Approval UI
 Priority: P0
-Phase: 24
+Phase: 25
 Dependencies: VXC-150
 
 Goal:
@@ -899,7 +994,7 @@ Tasks:
 
 ### VXC-243 — IDE-like Remediation & Verification UI
 Priority: P0
-Phase: 24
+Phase: 25
 Dependencies: VXC-180, VXC-200
 
 Goal:
@@ -912,11 +1007,11 @@ Tasks:
 
 ---
 
-## Phase 25 — End-to-End Integration
+## Phase 26 — End-to-End Integration
 
 ### VXC-250 — Complete E2E Flows
 Priority: P0
-Phase: 25
+Phase: 26
 Dependencies: VXC-243
 
 Goal:
@@ -945,11 +1040,11 @@ CI:
 
 ---
 
-## Phase 26 — Final Evaluation
+## Phase 27 — Final Evaluation
 
 ### VXC-260 — Final Benchmark Execution
 Priority: P1
-Phase: 26
+Phase: 27
 Dependencies: VXC-250
 
 Goal:
@@ -966,11 +1061,11 @@ Deliverables:
 
 ---
 
-## Phase 27 — Release Engineering
+## Phase 28 — Release Engineering
 
 ### VXC-270 — Final Polish and Documentation
 Priority: P0
-Phase: 27
+Phase: 28
 Dependencies: VXC-260
 
 Goal:
@@ -1011,8 +1106,30 @@ Deliverables:
 - All PRs must pass required CI checks before merging.
 - See "Cross-Cutting Requirements — Professional Git & GitHub Development Workflow" for complete workflow details.
 
+### MCP Integration
+- MCP is a focused tool interface for interoperability, NOT a separate architecture.
+- Implement only useful VoxCode capabilities as MCP tools (repository search, file inspection, AST analysis, dependency analysis, semantic retrieval, build, test, verification).
+- Do NOT create large MCP server ecosystems, dozens of servers, or MCP-based microservices.
+- Use MCP only where it provides genuine architectural value for tool interoperability.
+
+### Technology Scope Protection
+- Do NOT add or make core requirements: Kafka, Kubernetes, Redis, Microservices, GraphRAG, Multi-agent systems, Custom LLM, Foundation model training, Full IDE replacement, Autonomous production deployment, Unlimited repair loops, Huge MCP ecosystem, Generic multi-language support, General-purpose coding assistant functionality.
+- Every technology must have a direct role in: Retrieve → Investigate → Decide → Act → Verify.
+- Prioritize: Completed + Reliable + Measurable + Defensible over Large + Feature-heavy + Unfinished.
+- Do not add a feature unless it strengthens: Evidence → Decision → Action → Verification.
+
 ### Evaluation
 - Continuous focus on proving the value of RAG and the Agent via ablation and benchmarking. Separate investigation metrics from remediation metrics.
+- RAG evaluation must include quantitative metrics (Recall@K, Precision@K, MRR, NDCG, retrieval relevance, latency, context relevance, token efficiency, investigation success).
+- Ablation study comparing AST+Dependency Graph+Agent vs AST+Dependency Graph+RAG+Agent to demonstrate RAG's actual value.
+
+### Intelligence Boundaries
+- **AST = Structural Truth**: JavaParser provides deterministic structural analysis (classes, methods, annotations, imports).
+- **JGraphT = Relationship Truth**: Dependency graph provides deterministic relationship analysis (caller/callee, class dependencies, interfaces).
+- **RAG = Semantic/Contextual Information**: Hybrid retrieval provides semantic context, documentation, similar implementations, cross-file relationships.
+- **Tools = Operational Truth**: Agent tools provide operational capabilities (read files, execute builds, run tests).
+- **Build/Tests = Behavioral Truth**: Execution verification provides behavioral validation.
+- **Critical Boundary**: RAG must NEVER replace AST or dependency analysis for structural claims. Use the right tool for the right truth.
 
 ---
 
@@ -1172,10 +1289,12 @@ These workflows are entirely separate concepts. The developer workflow ensures V
 ## Architecture Decision Records (ADRs) TO WRITE
 - ADR 01: Modular Monolith vs Microservices
 - ADR 02: JavaParser vs Language Server Protocol (LSP) for AST
-- ADR 03: RAG Semantic Boundary
+- ADR 03: RAG Semantic Boundary and Hybrid Retrieval Strategy
 - ADR 04: Structured Evidence Validation
 - ADR 05: Verification via Docker Sandbox
 - ADR 06: Deterministic AST Remediation vs LLM Direct Text Replace
+- ADR 07: MCP as Focused Tool Interface vs Separate Architecture
+- ADR 08: Intelligence Boundaries (AST vs Graph vs RAG vs Tools vs Build/Tests)
 
 ---
 
@@ -1192,3 +1311,17 @@ These workflows are entirely separate concepts. The developer workflow ensures V
 - [ ] Investigation and remediation traces are fully persisted and distinctly separated.
 - [ ] Engineering Report contains the complete lifecycle.
 - [ ] Out-of-scope feature-generation requests are explicitly classified and rejected.
+- [ ] RAG implements hybrid retrieval (vector + lexical + metadata/symbol + dependency-aware) with reranking and context assembly.
+- [ ] RAG evaluation includes quantitative metrics (Recall@K, Precision@K, MRR, NDCG, retrieval relevance, latency, context relevance, token efficiency, investigation success).
+- [ ] Ablation study demonstrates RAG's actual value (AST+Graph+Agent vs AST+Graph+RAG+Agent).
+- [ ] RAG never replaces AST or dependency analysis for structural claims.
+- [ ] One adaptive primary agent (not multi-agent swarm) implements the Request → Classification → Hypothesis → Tool → Observation → Evaluation → Next Action → Evidence → Decision → Finding loop.
+- [ ] Agent can determine evidence is insufficient and request additional retrieval/tool calls.
+- [ ] Agent does not expose hidden chain-of-thought; only structured decision traces are persisted.
+- [ ] MCP is implemented as a focused tool interface, not a separate architecture or ecosystem.
+- [ ] MCP exposes only useful VoxCode capabilities (repository search, file inspection, AST analysis, dependency analysis, semantic retrieval, build, test, verification).
+- [ ] Intelligence boundaries are respected: AST = structural truth, JGraphT = relationship truth, RAG = semantic/contextual information, Tools = operational truth, Build/tests = behavioral truth.
+- [ ] Project remains one unified VoxCode system with no Kafka/Kubernetes/Redis/microservices/GraphRAG/multi-agent creep.
+- [ ] Git/GitHub professional workflow is explicit and followed (branches, commits, pushes, PRs, reviews, merges, branch protection).
+- [ ] GitHub Actions validates compilation, unit tests, integration tests, and static analysis.
+- [ ] TODO.md remains the single source of truth for VoxCode specification.
