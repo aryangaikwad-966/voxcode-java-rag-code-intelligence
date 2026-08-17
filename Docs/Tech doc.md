@@ -412,6 +412,29 @@ Each layer answers different types of questions.
 
 This separation is fundamental to VoxCode.
 
+### Intelligence Boundaries
+
+Each intelligence layer has a distinct responsibility:
+
+```text
+AST = Structural Truth
+  └─ JavaParser provides deterministic structural analysis
+
+JGraphT = Relationship Truth
+  └─ Dependency graph provides deterministic relationship analysis
+
+RAG = Semantic/Contextual Information
+  └─ Hybrid retrieval provides semantic context and documentation
+
+Tools = Operational Truth
+  └─ Agent tools provide operational capabilities
+
+Build/Tests = Behavioral Truth
+  └─ Execution verification provides behavioral validation
+```
+
+**Critical Boundary:** RAG must NEVER replace AST or dependency analysis for structural claims. Use the right tool for the right truth.
+
 ---
 
 # 9. AST Intelligence
@@ -561,20 +584,26 @@ Do not build an unnecessarily complex graph database.
 
 RAG is a **supporting intelligence layer**, not the primary mechanism for understanding Java structure.
 
+RAG implements deep hybrid retrieval, NOT just chunk→embed→top-K.
+
 ```text
 Repository
     ↓
 Document Selection
     ↓
-Chunking
-    ↓
-Metadata
+Chunking + Metadata
     ↓
 Embedding
     ↓
 Qdrant
     ↓
-Semantic Retrieval
+Hybrid Retrieval
+   ├── Vector retrieval (semantic similarity)
+   ├── Lexical retrieval (keyword/BM25)
+   ├── Metadata/symbol retrieval (exact matches)
+   └── Dependency-aware retrieval
+    ↓
+Reranking
     ↓
 Context Assembly
     ↓
@@ -627,10 +656,13 @@ documentType
 module
 language
 symbol
+symbolInfo
+className
+methodName
 chunkIndex
 ```
 
-This enables metadata filtering before semantic retrieval.
+This enables metadata filtering before semantic retrieval and supports dependency-aware retrieval.
 
 ---
 
@@ -664,7 +696,7 @@ MySQL Application State
 
 # 17. Agent Architecture
 
-The agent is the core AI component.
+The agent is the core AI component. There must be **ONE primary adaptive agent**.
 
 VoxCode must not be a fixed pipeline such as:
 
@@ -682,6 +714,8 @@ Instead, it follows an adaptive investigation loop:
 
 ```text
 User Question
+      ↓
+Request Classification
       ↓
 Hypothesis
       ↓
@@ -703,6 +737,17 @@ Tools
 ```
 
 The next action should depend on what the agent has observed.
+
+### Required Agent Capabilities
+
+The agent must:
+
+1. **Implement request classification** - INVESTIGATE, REMEDIATE, INVESTIGATE_AND_REMEDIATE, OUT_OF_SCOPE
+2. **Genuinely adapt based on tool observations** - Next action depends on what was observed
+3. **Determine evidence insufficiency** - Agent can request additional retrieval/tool calls
+4. **Follow the investigation loop** - Request → Classification → Hypothesis → Tool → Observation → Evaluation → Next Action → Evidence → Decision → Finding
+5. **Not expose hidden chain-of-thought** - Only structured decision traces are persisted
+6. **Explicitly reject OUT_OF_SCOPE requests** - Stop after classification for feature generation requests
 
 ---
 
@@ -887,7 +932,7 @@ Write and execute capabilities must never be implicitly granted simply because a
 
 # 22. MCP Strategy
 
-MCP should be included **selectively**.
+MCP should be included as a **focused tool interface for interoperability**, NOT a separate architecture.
 
 The goal is to create a clean tool boundary:
 
@@ -897,14 +942,27 @@ VoxCode Agent
       │ MCP
       ▼
 Repository Tools
-├── AST
-├── Dependency Graph
-├── Repository Search
-├── RAG
-└── Diagnostics
+├── Repository search
+├── File inspection
+├── AST analysis
+├── Dependency analysis
+├── Semantic retrieval
+├── Build
+├── Test
+└── Verification
 ```
 
-However:
+### MCP Requirements
+
+* Implement a focused MCP server/interface
+* Expose only useful VoxCode capabilities/tools
+* MCP is an interoperability/tool interface, NOT a separate architecture
+* Do NOT build a large MCP ecosystem
+* Do NOT create dozens of unnecessary servers
+* Do NOT create MCP-based microservices
+* Use MCP only where it provides genuine architectural value
+
+### Important
 
 > **MCP is a tool interoperability boundary, not a separate product subsystem.**
 
@@ -1102,19 +1160,23 @@ Never rely on unrestricted string replacement.
 replace("old code", "new code")
 ```
 
-### Preferred
+### Preferred Priority Order
 
-```text
-AST-aware transformation
-```
-
-or controlled:
-
-```text
-OpenRewrite transformation
-```
+1. **Deterministic transformation using OpenRewrite** when appropriate for Java/Spring transformations
+2. **AST-aware transformation** using JavaParser
+3. **AI-generated targeted patch** only when deterministic transformation is insufficient
 
 The AI can **propose** a change, but VoxCode should control how that change is actually applied.
+
+```text
+OpenRewrite transformation (preferred for Java/Spring)
+  ↓
+AST-aware transformation (JavaParser)
+  ↓
+AI-generated targeted patch (fallback only)
+```
+
+Never use unrestricted LLM text replacement as the default mechanism.
 
 ---
 
@@ -1706,27 +1768,35 @@ These metrics should be calculated automatically by the evaluation pipeline.
 
 # 51. RAG Evaluation
 
-Measure:
+Measure comprehensive metrics:
 
 ```text
 Recall@K
+Precision@K
+MRR (Mean Reciprocal Rank)
+NDCG (Normalized Discounted Cumulative Gain)
 Retrieval Relevance
 Retrieval Latency
+Context Relevance
+Token Efficiency
+Investigation Success
 ```
 
 Most importantly, perform an ablation study:
 
 ```text
-Agent + AST + Graph
+Baseline: Agent + AST + Graph
         VS
-Agent + AST + Graph + RAG
+Full: Agent + AST + Graph + RAG
 ```
 
 This answers:
 
-> **Does RAG actually improve VoxCode?**
+> **Does RAG actually improve repository investigation?**
 
 If it does not, the retrieval strategy should be improved rather than retaining RAG purely as a technology label.
+
+Do not add retrieval technologies merely for resume keywords. The evaluation must demonstrate whether RAG actually improves repository investigation.
 
 ---
 
@@ -2012,7 +2082,7 @@ The project's complexity should come from:
 Strictly excluded from the core architecture:
 
 ```text
-❌ Multi-agent architecture
+❌ Multi-agent architecture (ONE primary adaptive agent only)
 ❌ General-purpose coding assistant
 ❌ Cursor clone
 ❌ Devin clone
@@ -2021,14 +2091,24 @@ Strictly excluded from the core architecture:
 ❌ Graph RAG
 ❌ Kubernetes
 ❌ Kafka
-❌ Redis without concrete need
+❌ Redis
+❌ Microservices
 ❌ Custom distributed workflow engine
 ❌ Complex voice infrastructure
 ❌ Custom container orchestration
 ❌ Unlimited autonomous code modification
+❌ Huge MCP ecosystem
+❌ MCP for every internal method
+❌ MCP-based microservices
 ```
 
-These exclusions are intentional to protect the project's one-year scope.
+These exclusions are intentional to protect the project's one-year scope and ensure focused, deep implementation.
+
+### Technology Protection Rule
+
+Every technology must have a direct role in: Retrieve → Investigate → Decide → Act → Verify
+
+Do not add technologies just because they are popular or resume-friendly.
 
 ---
 

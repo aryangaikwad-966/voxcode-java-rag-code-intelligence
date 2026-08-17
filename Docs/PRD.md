@@ -449,6 +449,16 @@ Next Action
 Final Conclusion
 ```
 
+### Required Agent Capabilities
+
+The agent must:
+
+1. **Genuinely adapt based on tool observations** - Next action depends on what was observed
+2. **Determine evidence insufficiency** - Agent can request additional retrieval/tool calls
+3. **Follow the investigation loop** - Request → Classification → Hypothesis → Tool → Observation → Evaluation → Next Action → Evidence → Decision → Finding
+4. **Not expose hidden chain-of-thought** - Only structured decision traces are persisted
+5. **Handle request classification** - INVESTIGATE, REMEDIATE, INVESTIGATE_AND_REMEDIATE, OUT_OF_SCOPE
+
 ### Required proof of agentic behavior
 
 The final system must demonstrate multiple traces where:
@@ -514,9 +524,37 @@ It enables:
 
 ---
 
-## 11.3 Supporting RAG
+## 11.3 Hybrid Repository-Aware RAG
 
 RAG is an important part of VoxCode, but it is **not the primary structural understanding mechanism**.
+
+RAG implements deep hybrid retrieval for repository semantic context, NOT just chunk→embed→top-K.
+
+### RAG Pipeline
+
+```text
+Repository Documents
+       ↓
+Chunking + Metadata
+       ↓
+Embeddings
+       ↓
+Qdrant
+       ↓
+Hybrid Retrieval
+   ├── Vector retrieval (semantic similarity)
+   ├── Lexical retrieval (keyword/BM25)
+   ├── Metadata/symbol retrieval (exact matches)
+   └── Dependency-aware retrieval
+       ↓
+Reranking
+       ↓
+Context Assembly
+       ↓
+Agent
+```
+
+### Retrieval Sources
 
 RAG retrieves semantic/contextual information such as:
 
@@ -527,24 +565,11 @@ RAG retrieves semantic/contextual information such as:
 * Project conventions
 * Repository text
 * Historical issue/commit context where available
-
-### RAG Pipeline
-
-```text
-Repository Documents
-       ↓
-Chunking
-       ↓
-Embeddings
-       ↓
-Qdrant
-       ↓
-Semantic Retrieval
-       ↓
-Context Assembly
-       ↓
-Agent
-```
+* Similar implementations
+* Related classes/methods
+* Tests
+* Error handling patterns
+* Cross-file semantic context
 
 ### Responsibility separation
 
@@ -556,33 +581,49 @@ Agent
 
 > **Agent decides which information it needs and when.**
 
+### Important Boundary
+
+**AST = Structural Truth**
+**JGraphT = Relationship Truth**
+**RAG = Semantic/Contextual Information**
+**Tools = Operational Truth**
+**Build/Tests = Behavioral Truth**
+
+RAG must NEVER replace AST or dependency analysis for structural claims.
+
 ---
 
 # 12. RAG Evaluation
 
-RAG must demonstrate measurable value.
+RAG must demonstrate measurable value through comprehensive metrics and ablation study.
 
 VoxCode performs an ablation study:
 
 ```text
-Agent + AST + Graph
+Baseline: Agent + AST + Graph
         VS
-Agent + AST + Graph + RAG
+Full: Agent + AST + Graph + RAG
 ```
 
 Measure:
 
 * Recall@K
+* Precision@K
+* MRR (Mean Reciprocal Rank)
+* NDCG (Normalized Discounted Cumulative Gain)
 * Retrieval relevance
 * Retrieval latency
+* Context relevance
+* Token efficiency
 * Investigation success
-* Finding quality
 
 The purpose is to answer:
 
-> **Does RAG actually improve investigation?**
+> **Does RAG actually improve repository investigation?**
 
 If retrieval does not materially improve relevant tasks, that result should be documented honestly.
+
+Do not add retrieval technologies merely for resume keywords. The evaluation must demonstrate whether RAG actually improves repository investigation.
 
 ---
 
@@ -777,13 +818,20 @@ Supported bounded correctness fixes
 
 Avoid uncontrolled raw text manipulation.
 
+Prioritize transformations in this exact order:
+
+1. **Deterministic transformation using OpenRewrite** when appropriate for Java/Spring transformations
+2. **AST-aware transformation**
+3. **AI-generated targeted patch** only when deterministic transformation is insufficient
+
+Never use unrestricted LLM text replacement as the default mechanism.
+
 Prefer:
 
-* JavaParser
-* OpenRewrite
+* OpenRewrite for deterministic Java/Spring transformations where appropriate
+* JavaParser for AST-aware transformation
 * Carefully bounded file modifications
-
-where appropriate.
+* AI-generated targeted patches only when deterministic transformation is insufficient
 
 ---
 
@@ -1016,30 +1064,40 @@ VERIFIED
 
 # 25. MCP
 
-MCP is included selectively as part of VoxCode's agent/tool architecture.
+MCP is included as a focused tool interface for interoperability, NOT a separate architecture.
 
-Potential capabilities exposed through MCP-style tools:
+Potential capabilities exposed through MCP tools:
 
 * Repository search
-* AST inspection
-* Dependency lookup
 * File inspection
-* Repository metadata
-* Diagnostic operations
+* AST analysis
+* Dependency analysis
+* Semantic retrieval
+* Build
+* Test
+* Verification
 
 Architecture:
 
 ```text
 Agent
   ↓
-MCP Tool
+MCP Tool Interface
   ↓
 Repository Capability
 ```
 
-### MCP rule
+### MCP Requirements
 
-Do not build a large MCP ecosystem.
+* Implement a focused MCP server/interface
+* Expose only useful VoxCode capabilities/tools
+* MCP is an interoperability/tool interface, NOT a separate architecture
+* Do NOT build a large MCP ecosystem
+* Do NOT create dozens of unnecessary servers
+* Do NOT create MCP-based microservices
+* Use MCP only where it provides genuine architectural value
+
+### MCP Rule
 
 MCP should only be used where it improves:
 
