@@ -1,5 +1,100 @@
 # VoxCode Implementation TODO
 
+## Current Project Status
+
+**Current Phase:** Phase 1 — Backend Engineering Foundation  
+**Current Task:** VXC-010 — Configuration Management and Logging  
+**Current Task Status:** IN PROGRESS  
+
+### Completed Tasks
+- [x] VXC-001 — Initialize backend repository
+- [x] VXC-002 — Establish local environment
+
+### In Progress Tasks
+- [/] VXC-010 — Configuration Management and Logging
+
+### Next Tasks
+- [ ] VXC-011 — Database and Migrations
+- [ ] VXC-020 — GitHub Actions Core Pipeline
+- [ ] VXC-030 — Repository Ingestion & Validation
+
+### Overall Progress
+**1 / 28 phases completed** (Phase 0 complete, Phase 1 in progress)  
+**2 / 34 VXC tasks completed** (5.9% complete)  
+**Phase 0:** 2/2 tasks complete (100%)  
+**Phase 1:** 0/2 tasks complete (0%) - VXC-010 in progress
+
+### Status Rules
+
+#### Task Status
+- `[ ]` = NOT STARTED
+- `[/]` = IN PROGRESS  
+- `[x]` = COMPLETE
+
+#### Current Phase Rule
+The current phase is the earliest phase containing an incomplete VXC task. A phase becomes COMPLETE only when ALL VXC tasks inside that phase are marked `[x]`.
+
+#### Current Task Rule
+The current task is the VXC task actively being implemented and marked `[/]`. Only ONE VXC task should normally be marked `[/]` at a time unless there is a genuine dependency reason.
+
+#### Next Task Rule
+The next task is determined from the existing dependency order in TODO.md. Do NOT invent a new task order. Respect all existing VXC dependencies.
+
+### Phase Progress Overview
+
+| Phase | Area | Status |
+|---|---|---|
+| 0 | Repository / Project Setup | COMPLETE |
+| 1 | Backend Engineering Foundation (2 tasks) | IN PROGRESS |
+| 2 | CI/CD (1 task) | NOT STARTED |
+| 3 | Repository Ingestion / Workspaces | NOT STARTED |
+| 4 | AST Intelligence | NOT STARTED |
+| 5 | Dependency Graph | NOT STARTED |
+| 6 | Repository Index | NOT STARTED |
+| 7 | Hybrid Repository-Aware RAG | NOT STARTED |
+| 8 | RAG Evaluation | NOT STARTED |
+| 9 | Agent Tools | NOT STARTED |
+| 10 | MCP Tool Interface | NOT STARTED |
+| 11 | Adaptive Investigation Agent | NOT STARTED |
+| 12 | Agent Evaluation | NOT STARTED |
+| 13 | Evidence Engine | NOT STARTED |
+| 14 | Finding Validation | NOT STARTED |
+| 15 | Engineering Planning | NOT STARTED |
+| 16 | Human Approval | NOT STARTED |
+| 17 | Bounded Remediation | NOT STARTED |
+| 18 | Docker Sandbox | NOT STARTED |
+| 19 | Build/Test/Static Verification | NOT STARTED |
+| 20 | Limited Repair | NOT STARTED |
+| 21 | Rollback | NOT STARTED |
+| 22 | Engineering Report | NOT STARTED |
+| 23 | Observability | NOT STARTED |
+| 24 | Security Hardening | NOT STARTED |
+| 25 | Frontend (4 tasks) | NOT STARTED |
+| 26 | End-to-End Integration | NOT STARTED |
+| 27 | Final Evaluation | NOT STARTED |
+| 28 | Release Engineering | NOT STARTED |
+
+### Developer Workflow
+1. Select the next VXC task according to dependencies.
+2. Mark it `[/]`.
+3. Create the appropriate Git branch.
+4. Implement the task.
+5. Write/update tests.
+6. Run required validation.
+7. Commit changes.
+8. Push branch.
+9. Open PR.
+10. CI passes.
+11. Review completed.
+12. Merge.
+13. Verify the VXC Definition of Done.
+14. Mark the VXC task `[x]`.
+15. Move to the next task.
+
+**Note:** Tasks are only marked `[x]` when the existing Definition of Done has genuinely been satisfied, not merely when code has been written.
+
+---
+
 ## Project Identity
 
 **VoxCode — Agentic Java RAG Intelligence**
@@ -103,7 +198,7 @@ This describes the phased development approach for building the VoxCode software
 
 ## Phase 0 — Repository/Project Setup
 
-### VXC-001 — Initialize backend repository
+### [x] VXC-001 — Initialize backend repository
 Priority: P0
 Phase: 0
 Dependencies: None
@@ -132,7 +227,7 @@ Tests:
 CI:
 - None yet.
 
-### VXC-002 — Establish local environment
+### [x] VXC-002 — Establish local environment
 Priority: P0
 Phase: 0
 Dependencies: VXC-001
@@ -161,7 +256,7 @@ CI:
 
 ## Phase 1 — Backend Engineering Foundation
 
-### VXC-010 — Configuration Management and Logging
+### [/] VXC-010 — Configuration Management and Logging
 Priority: P0
 Phase: 1
 Dependencies: VXC-001
@@ -187,7 +282,7 @@ Tests:
 CI:
 - Basic build check.
 
-### VXC-011 — Database and Migrations
+### [ ] VXC-011 — Database and Migrations
 Priority: P0
 Phase: 1
 Dependencies: VXC-002, VXC-010
@@ -216,7 +311,7 @@ CI:
 
 ## Phase 2 — CI/CD
 
-### VXC-020 — GitHub Actions Core Pipeline
+### [ ] VXC-020 — GitHub Actions Core Pipeline
 Priority: P0
 Phase: 2
 Dependencies: VXC-011
@@ -251,7 +346,7 @@ CI:
 
 ## Phase 3 — Repository Ingestion/Workspaces
 
-### VXC-030 — Repository Ingestion & Validation
+### [ ] VXC-030 — Repository Ingestion & Validation
 Priority: P0
 Phase: 3
 Dependencies: VXC-011
@@ -281,7 +376,7 @@ CI:
 
 ## Phase 4 — AST Intelligence
 
-### VXC-040 — JavaParser Integration
+### [ ] VXC-040 — JavaParser Integration
 Priority: P0
 Phase: 4
 Dependencies: VXC-030
@@ -311,7 +406,7 @@ CI:
 
 ## Phase 5 — Dependency Graph
 
-### VXC-050 — JGraphT Integration
+### [ ] VXC-050 — JGraphT Integration
 Priority: P0
 Phase: 5
 Dependencies: VXC-040
@@ -340,7 +435,7 @@ CI:
 
 ## Phase 6 — Repository Index
 
-### VXC-060 — Structural and Semantic Indexing Layer
+### [ ] VXC-060 — Structural and Semantic Indexing Layer
 Priority: P0
 Phase: 6
 Dependencies: VXC-050
@@ -369,7 +464,7 @@ CI:
 
 ## Phase 7 — Hybrid Repository-Aware RAG
 
-### VXC-070 — RAG Pipeline Setup
+### [ ] VXC-070 — RAG Pipeline Setup
 Priority: P1
 Phase: 7
 Dependencies: VXC-002, VXC-060
@@ -408,7 +503,7 @@ CI:
 
 ## Phase 8 — RAG Evaluation
 
-### VXC-080 — Retrieval Benchmarking
+### [ ] VXC-080 — Retrieval Benchmarking
 Priority: P1
 Phase: 8
 Dependencies: VXC-070
@@ -450,7 +545,7 @@ CI:
 
 ## Phase 9 — Agent Tools
 
-### VXC-090 — Core Agent Tools
+### [ ] VXC-090 — Core Agent Tools
 Priority: P0
 Phase: 9
 Dependencies: VXC-060, VXC-070, VXC-080
@@ -483,7 +578,7 @@ CI:
 
 ## Phase 10 — MCP Tool Interface
 
-### VXC-095 — Focused MCP Server
+### [ ] VXC-095 — Focused MCP Server
 Priority: P1
 Phase: 10
 Dependencies: VXC-090
@@ -522,7 +617,7 @@ CI:
 
 ## Phase 11 — Adaptive Investigation Agent
 
-### VXC-100 — Core Investigation Loop
+### [ ] VXC-100 — Core Investigation Loop
 Priority: P0
 Phase: 11
 Dependencies: VXC-095
@@ -556,7 +651,7 @@ CI:
 
 ## Phase 12 — Agent Evaluation
 
-### VXC-110 — Agent Benchmark
+### [ ] VXC-110 — Agent Benchmark
 Priority: P1
 Phase: 12
 Dependencies: VXC-100
@@ -585,7 +680,7 @@ CI:
 
 ## Phase 13 — Evidence Engine
 
-### VXC-120 — Structured Evidence Model
+### [ ] VXC-120 — Structured Evidence Model
 Priority: P0
 Phase: 13
 Dependencies: VXC-110
@@ -614,7 +709,7 @@ CI:
 
 ## Phase 14 — Finding Validation
 
-### VXC-130 — Evidence Verification
+### [ ] VXC-130 — Evidence Verification
 Priority: P0
 Phase: 14
 Dependencies: VXC-120
@@ -642,7 +737,7 @@ CI:
 
 ## Phase 15 — Engineering Planning
 
-### VXC-140 — Plan Generation
+### [ ] VXC-140 — Plan Generation
 Priority: P0
 Phase: 15
 Dependencies: VXC-130
@@ -672,7 +767,7 @@ CI:
 
 ## Phase 16 — Human Approval
 
-### VXC-150 — Approval Gate
+### [ ] VXC-150 — Approval Gate
 Priority: P0
 Phase: 16
 Dependencies: VXC-140
@@ -702,7 +797,7 @@ CI:
 
 ## Phase 17 — Bounded Remediation
 
-### VXC-160 — Safe Code Modification
+### [ ] VXC-160 — Safe Code Modification
 Priority: P0
 Phase: 17
 Dependencies: VXC-150
@@ -737,7 +832,7 @@ CI:
 
 ## Phase 18 — Docker Sandbox
 
-### VXC-170 — Isolated Workspace Execution
+### [ ] VXC-170 — Isolated Workspace Execution
 Priority: P0
 Phase: 18
 Dependencies: VXC-160
@@ -766,7 +861,7 @@ CI:
 
 ## Phase 19 — Build/Test/Static Verification
 
-### VXC-180 — Executable Verification
+### [ ] VXC-180 — Executable Verification
 Priority: P0
 Phase: 19
 Dependencies: VXC-170
@@ -802,7 +897,7 @@ CI:
 
 ## Phase 20 — Limited Repair
 
-### VXC-190 — Bounded Repair Loop
+### [ ] VXC-190 — Bounded Repair Loop
 Priority: P1
 Phase: 20
 Dependencies: VXC-180
@@ -834,7 +929,7 @@ CI:
 
 ## Phase 21 — Rollback
 
-### VXC-200 — State Preservation and Recovery
+### [ ] VXC-200 — State Preservation and Recovery
 Priority: P0
 Phase: 21
 Dependencies: VXC-190
@@ -868,7 +963,7 @@ CI:
 
 ## Phase 22 — Engineering Report
 
-### VXC-210 — Report Generation
+### [ ] VXC-210 — Report Generation
 Priority: P0
 Phase: 22
 Dependencies: VXC-200
@@ -896,7 +991,7 @@ CI:
 
 ## Phase 23 — Observability
 
-### VXC-220 — Telemetry and Metrics
+### [ ] VXC-220 — Telemetry and Metrics
 Priority: P1
 Phase: 23
 Dependencies: VXC-210
@@ -925,7 +1020,7 @@ CI:
 
 ## Phase 24 — Security Hardening
 
-### VXC-230 — System Security Hardening
+### [ ] VXC-230 — System Security Hardening
 Priority: P0
 Phase: 24
 Dependencies: VXC-001
@@ -955,7 +1050,7 @@ CI:
 
 ## Phase 25 — Frontend
 
-### VXC-240 — UI Foundation and Repository Overview
+### [ ] VXC-240 — UI Foundation and Repository Overview
 Priority: P0
 Phase: 25
 Dependencies: VXC-030, VXC-060
@@ -968,7 +1063,7 @@ Tasks:
 - Build Landing, Connect Repository, and Repository Overview screens.
 - Connect to backend REST APIs for repository ingestion status.
 
-### VXC-241 — Investigation and Trace UI
+### [ ] VXC-241 — Investigation and Trace UI
 Priority: P0
 Phase: 25
 Dependencies: VXC-100, VXC-120
@@ -980,7 +1075,7 @@ Tasks:
 - Implement Chat/Q&A interface.
 - Build the Investigation Workspace showing live SSE updates of the agent trace, hypotheses, tool calls, evidence, and findings.
 
-### VXC-242 — Planning and Approval UI
+### [ ] VXC-242 — Planning and Approval UI
 Priority: P0
 Phase: 25
 Dependencies: VXC-150
@@ -992,7 +1087,7 @@ Tasks:
 - Build the Engineering Plan view (affected files, risks).
 - Add explicit Approve/Reject buttons connected to the API.
 
-### VXC-243 — IDE-like Remediation & Verification UI
+### [ ] VXC-243 — IDE-like Remediation & Verification UI
 Priority: P0
 Phase: 25
 Dependencies: VXC-180, VXC-200
@@ -1009,7 +1104,7 @@ Tasks:
 
 ## Phase 26 — End-to-End Integration
 
-### VXC-250 — Complete E2E Flows
+### [ ] VXC-250 — Complete E2E Flows
 Priority: P0
 Phase: 26
 Dependencies: VXC-243
@@ -1042,7 +1137,7 @@ CI:
 
 ## Phase 27 — Final Evaluation
 
-### VXC-260 — Final Benchmark Execution
+### [ ] VXC-260 — Final Benchmark Execution
 Priority: P1
 Phase: 27
 Dependencies: VXC-250
@@ -1063,7 +1158,7 @@ Deliverables:
 
 ## Phase 28 — Release Engineering
 
-### VXC-270 — Final Polish and Documentation
+### [ ] VXC-270 — Final Polish and Documentation
 Priority: P0
 Phase: 28
 Dependencies: VXC-260

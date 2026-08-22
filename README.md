@@ -96,9 +96,21 @@ Repository → Repository Intelligence (AST + Dependency Graph + Repository Inde
 
 ### Prerequisites
 - Docker & Docker Compose
-- Java 21
+- Java 21 (install via Homebrew: `brew install openjdk@21`)
 - Maven 3.9+
 - Node.js 20+
+
+### Java 21 Setup
+If you have multiple Java versions installed, set Java 21 as the default:
+```bash
+export JAVA_HOME=/opt/homebrew/opt/openjdk@21
+export PATH="$JAVA_HOME/bin:$PATH"
+```
+
+Or use the provided setup script:
+```bash
+source setup-env.sh
+```
 
 ### Starting Infrastructure
 1. Make sure Docker is running.
@@ -110,11 +122,16 @@ Repository → Repository Intelligence (AST + Dependency Graph + Repository Inde
 
 ### Backend Development
 1. Navigate to `Backend/`
-2. Ensure you are using Java 21:
+2. Set up Java 21 environment:
+   ```bash
+   export JAVA_HOME=/opt/homebrew/opt/openjdk@21
+   export PATH="$JAVA_HOME/bin:$PATH"
+   ```
+3. Verify Java version:
    ```bash
    java -version
    ```
-3. Run the Spring Boot application:
+4. Run the Spring Boot application:
    ```bash
    ./mvnw spring-boot:run -Dspring-boot.run.profiles=local
    ```
