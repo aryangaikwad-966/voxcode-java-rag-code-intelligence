@@ -3,15 +3,15 @@
 ## Current Project Status
 
 **Current Phase:** Phase 1 — Backend Engineering Foundation  
-**Current Task:** VXC-010 — Configuration Management and Logging  
-**Current Task Status:** IN PROGRESS  
+**Current Task:** VXC-011 — Database and Migrations  
+**Current Task Status:** NOT STARTED  
 
 ### Completed Tasks
 - [x] VXC-001 — Initialize backend repository
 - [x] VXC-002 — Establish local environment
+- [x] VXC-010 — Configuration Management and Logging
 
 ### In Progress Tasks
-- [/] VXC-010 — Configuration Management and Logging
 
 ### Next Tasks
 - [ ] VXC-011 — Database and Migrations
@@ -20,9 +20,9 @@
 
 ### Overall Progress
 **1 / 28 phases completed** (Phase 0 complete, Phase 1 in progress)  
-**2 / 34 VXC tasks completed** (5.9% complete)  
+**3 / 34 VXC tasks completed** (8.8% complete)  
 **Phase 0:** 2/2 tasks complete (100%)  
-**Phase 1:** 0/2 tasks complete (0%) - VXC-010 in progress
+**Phase 1:** 1/2 tasks complete (50%) - VXC-010 complete, VXC-011 next
 
 ### Status Rules
 
@@ -97,9 +97,9 @@ The next task is determined from the existing dependency order in TODO.md. Do NO
 
 ## Project Identity
 
-**VoxCode — Agentic Java RAG Intelligence**
+**VoxCode — Agentic Java RAG Code Intelligence**
 
-VoxCode is an Agentic AI system for Java/Spring repository intelligence that uses AST analysis, dependency analysis, and RAG to investigate engineering problems, gather and validate evidence, create engineering plans, perform human-approved bounded remediation, and verify or roll back changes.
+VoxCode is an Agentic Java RAG intelligence system that investigates Java/Spring repositories using AST, dependency analysis and hybrid retrieval, produces evidence-backed engineering plans, performs human-approved bounded code changes, and verifies or rolls back those changes.
 
 **Core Principle:**
 Understand → Retrieve → Investigate → Prove → Plan → Act → Verify
@@ -111,21 +111,37 @@ Understand → Retrieve → Investigate → Prove → Plan → Act → Verify
 Repository → Repository Intelligence (AST + Dependency Graph + Repository Index) → Hybrid Repository-Aware RAG → One Adaptive Primary Agent → Evidence Engine → Finding Validation → Engineering Plan → Human Approval → Bounded Remediation → MCP/Tool Interface → Isolated Docker Workspace → Build + Tests + Static Analysis + Diff/Scope Validation → PASS (Accept) / FAIL (Bounded Repair) / FAIL after retry budget (Rollback) → Engineering Report → Evaluation
 
 **Technology Scope (LOCKED):**
-- **Backend:** Java 21, Spring Boot, Maven, Spring AI
-- **Agentic AI:** One adaptive primary agent, tool calling, structured agent state, persisted decision/engineering traces
-- **RAG:** Embeddings, Qdrant, hybrid retrieval (vector + lexical + metadata/symbol + dependency-aware), reranking, context assembly, agentic retrieval, RAG evaluation and ablation
+
+**TIER 1 — PRIMARY IDENTITY**
+- **Backend:** Java 21, Spring Boot, Maven
+- **Agentic AI:** Spring AI, one adaptive primary agent, tool calling, structured agent state, persisted decision/engineering traces
 - **Repository Intelligence:** JavaParser for AST/program structure, JGraphT for dependency relationships, Repository Index for unified querying
-- **MCP:** Focused MCP server/interface exposing only useful VoxCode capabilities/tools (NOT a separate architecture)
-- **Remediation:** OpenRewrite for deterministic Java/Spring transformations where appropriate, AI-generated targeted patches only when deterministic transformation is insufficient
+- **Evidence Engine:** Structured evidence model, finding validation
+
+**TIER 2 — MAJOR AI SUBSYSTEM**
+- **RAG:** Embeddings, Qdrant, hybrid retrieval (vector + lexical + metadata/symbol + dependency-aware), reranking, context assembly, agentic retrieval, RAG evaluation and ablation
+
+**TIER 3 — CONTROLLED ENGINEERING ACTION**
+- **Remediation:** OpenRewrite for deterministic Java/Spring transformations where appropriate, AST-aware transformation, AI-generated targeted patches only when deterministic transformation is insufficient
 - **Execution:** Docker sandbox, controlled build/test execution, resource limits, restricted filesystem/network access
-- **Database:** MySQL for application state, findings, plans, approvals, traces, reports
+- **Verification:** Build, tests, static analysis, diff validation, bounded repair, rollback
+- **Planning:** Engineering planning, human approval
+
+**TIER 4 — SUPPORTING PRODUCT INFRASTRUCTURE**
+- **Database:** MySQL for application state (repositories, investigations, agent traces, findings, evidence, plans, approvals, executions, verification results, evaluation results) - treated as supporting infrastructure, NOT a major project focus
 - **Security:** Spring Security, authentication/authorization, repository isolation, path traversal protection, secret filtering, prompt-injection defenses, unsafe command protection
-- **Testing:** JUnit 5, Mockito, Testcontainers
-- **Frontend:** React
+- **Frontend:** React with SSE for agent status streaming
 - **CI/CD:** Git, GitHub, GitHub Actions, Pull Requests, branch protection, automated quality gates
+- **Testing:** JUnit 5, Mockito, Testcontainers
+
+**TIER 5 — OPTIONAL / ONLY IF TIME REMAINS**
+- **MCP:** Focused MCP server/interface exposing only useful VoxCode capabilities/tools (repository inspection, AST analysis, dependency analysis, retrieval, build, test, verification) - NOT a separate architecture or ecosystem
+
+**EXCLUDED TECHNOLOGIES**
+- Redis, Kafka, Kubernetes, Microservices, Distributed service architecture, Complex caching, Complex messaging infrastructure, Custom distributed workflow engines, Huge MCP ecosystem, Multi-agent swarm architecture, Foundation-model training, Custom LLM, Generic multi-language support, Full IDE replacement, Unlimited autonomous coding, Complex voice infrastructure, Arbitrary feature generation
 
 ## Project Rules
-- **Scope Protection:** VoxCode is a one-year bounded project. No feature creep. No multi-agent architecture (one primary agent only), no general-purpose coding assistants, no graph RAG, Kubernetes, Kafka, or Redis without absolute justification.
+- **Scope Protection:** VoxCode is a one-year bounded project. No feature creep. No multi-agent architecture (one primary agent only), no general-purpose coding assistants, no graph RAG, Kubernetes, Kafka, Redis, microservices, distributed service architecture, complex caching, complex messaging infrastructure, custom distributed workflow engines, huge MCP ecosystem, foundation-model training, custom LLM, generic multi-language support, full IDE replacement, unlimited autonomous coding, complex voice infrastructure, or arbitrary feature generation without absolute justification.
 - **Primary Capabilities:** Investigation and Bounded Remediation are EQUAL, first-class capabilities. Investigation discovers, analyzes and proves repository problems. Remediation applies targeted fixes to confirmed findings.
 - **Governing Principle:** Evidence and verification govern remediation. The LLM must NEVER be treated as the source of truth. No remediation is accepted without evidence and verification.
 - **Not a Feature Generator:** VoxCode applies safe, targeted fixes for confirmed findings. It does NOT generate arbitrary application features (e.g., "Build an authentication system"). Requests for new features must explicitly be classified as OUT OF SCOPE.
@@ -134,6 +150,9 @@ Repository → Repository Intelligence (AST + Dependency Graph + Repository Inde
 - **Human Approval:** No code modification may occur without explicit human approval of an engineering plan. Investigation and read-only analysis may occur before approval.
 - **Verification Criteria:** A generated patch is NEVER considered successful merely because it looks correct or builds. Remediation is successful ONLY when: intended files were modified, no unauthorized files were modified, diff matches approved plan, project builds successfully, tests pass, static analysis passes, and no unexpected modifications are detected. 
 - **Rollback:** Failed remediation must be recoverable through automated rollback. Rollback triggers: verification permanently fails, repair budget is exhausted, unauthorized modifications detected, or remediation violates the approved scope.
+- **Database as Supporting Infrastructure:** MySQL/JPA/Hibernate are supporting infrastructure for Agentic AI state persistence, NOT a major project focus. No complex database optimization, advanced SQL engineering, database sharding, complicated caching architecture, or unnecessary database abstractions.
+- **MCP as Focused Tool Interface:** MCP is a focused interoperability boundary for selected VoxCode tools (repository inspection, AST analysis, dependency analysis, retrieval, build, test, verification). Do NOT create multiple MCP servers, MCP microservices, dozens of MCP tools, or an MCP ecosystem.
+- **Technology Priority Rule:** Every technology must have a clear role in Retrieve → Investigate → Decide → Act → Verify → Evaluate. If a technology does not strengthen this loop, it should NOT be added.
 
 ## Remediation Scope
 **Supported Scope (IN SCOPE):**
@@ -256,7 +275,7 @@ CI:
 
 ## Phase 1 — Backend Engineering Foundation
 
-### [/] VXC-010 — Configuration Management and Logging
+### [x] VXC-010 — Configuration Management and Logging
 Priority: P0
 Phase: 1
 Dependencies: VXC-001
@@ -288,18 +307,19 @@ Phase: 1
 Dependencies: VXC-002, VXC-010
 
 Goal:
-Establish database schema management.
+Establish database schema management as supporting infrastructure for Agentic AI system state.
 
 Tasks:
 - Integrate Flyway or Liquibase for database migrations.
-- Define initial schemas for Users and Repositories.
-- Configure Spring Data JPA entities.
+- Define initial schemas for Users, Repositories, Investigations, Agent Traces, Findings, Evidence, Plans, Approvals, Executions, Verification Results, and Evaluation Results.
+- Configure Spring Data JPA entities for persistence.
+- Keep database design simple and focused on supporting the Agentic AI workflow (no complex optimization, sharding, or advanced SQL engineering).
 
 Deliverables:
-- Migration scripts and base JPA entities.
+- Migration scripts and base JPA entities for Agentic AI state persistence.
 
 Definition of Done:
-- Application starts and successfully applies migrations to the MySQL container.
+- Application starts and successfully applies migrations to the MySQL container. Database schema supports the core Agentic AI workflow without unnecessary complexity.
 
 Tests:
 - Repository layer integration tests using Testcontainers (MySQL).
@@ -578,13 +598,13 @@ CI:
 
 ## Phase 10 — MCP Tool Interface
 
-### [ ] VXC-095 — Focused MCP Server
-Priority: P1
+### [ ] VXC-095 — Focused MCP Server (OPTIONAL)
+Priority: P2
 Phase: 10
 Dependencies: VXC-090
 
 Goal:
-Implement a focused MCP interface for tool interoperability. MCP is a tool interface, NOT a separate architecture.
+Implement a focused MCP interface for tool interoperability. MCP is a tool interface, NOT a separate architecture. This is OPTIONAL and should only be implemented if time remains after core Agentic AI, RAG, and Verification capabilities are complete.
 
 Tasks:
 - Implement a focused MCP server exposing only useful VoxCode capabilities.
@@ -1202,16 +1222,19 @@ Deliverables:
 - See "Cross-Cutting Requirements — Professional Git & GitHub Development Workflow" for complete workflow details.
 
 ### MCP Integration
-- MCP is a focused tool interface for interoperability, NOT a separate architecture.
+- MCP is a focused tool interface for interoperability, NOT a separate architecture or ecosystem.
 - Implement only useful VoxCode capabilities as MCP tools (repository search, file inspection, AST analysis, dependency analysis, semantic retrieval, build, test, verification).
-- Do NOT create large MCP server ecosystems, dozens of servers, or MCP-based microservices.
+- Do NOT create large MCP server ecosystems, dozens of servers, MCP microservices, or MCP-based microservices.
 - Use MCP only where it provides genuine architectural value for tool interoperability.
+- MCP is TIER 5 (OPTIONAL) - only implement if time remains after core Agentic AI, RAG, and Verification capabilities are complete.
 
 ### Technology Scope Protection
-- Do NOT add or make core requirements: Kafka, Kubernetes, Redis, Microservices, GraphRAG, Multi-agent systems, Custom LLM, Foundation model training, Full IDE replacement, Autonomous production deployment, Unlimited repair loops, Huge MCP ecosystem, Generic multi-language support, General-purpose coding assistant functionality.
-- Every technology must have a direct role in: Retrieve → Investigate → Decide → Act → Verify.
-- Prioritize: Completed + Reliable + Measurable + Defensible over Large + Feature-heavy + Unfinished.
-- Do not add a feature unless it strengthens: Evidence → Decision → Action → Verification.
+- **EXCLUDED:** Kafka, Kubernetes, Redis, Microservices, Distributed service architecture, Complex caching, Complex messaging infrastructure, Custom distributed workflow engines, Huge MCP ecosystem, Multi-agent swarm architecture, Foundation-model training, Custom LLM, Generic multi-language support, Full IDE replacement, Unlimited autonomous coding, Complex voice infrastructure, Arbitrary feature generation.
+- **Database Constraint:** MySQL/JPA/Hibernate are supporting infrastructure for Agentic AI state persistence. No complex database optimization, advanced SQL engineering, database sharding, complicated caching architecture, or unnecessary database abstractions.
+- **MCP Constraint:** MCP is a focused tool interface for interoperability. Do NOT create multiple MCP servers, MCP microservices, dozens of MCP tools, or an MCP ecosystem. Use MCP only where it provides genuine architectural value for tool interoperability.
+- **Every technology must have a direct role in:** Retrieve → Investigate → Decide → Act → Verify → Evaluate.
+- **Prioritize:** Completed + Reliable + Measurable + Defensible over Large + Feature-heavy + Unfinished.
+- **Do not add a feature unless it strengthens:** Evidence → Decision → Action → Verification → Evaluation.
 
 ### Evaluation
 - Continuous focus on proving the value of RAG and the Agent via ablation and benchmarking. Separate investigation metrics from remediation metrics.

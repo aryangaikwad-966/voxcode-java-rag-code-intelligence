@@ -18,71 +18,33 @@ Repository → Repository Intelligence (AST + Dependency Graph + Repository Inde
 
 ## Technology Stack
 
-**Backend:**
-- Java 21
-- Spring Boot
-- Maven
-- Spring AI
+**TIER 1 — PRIMARY IDENTITY**
+- **Backend:** Java 21, Spring Boot, Maven
+- **Agentic AI:** Spring AI, one adaptive primary agent, tool calling, structured agent state, persisted decision/engineering traces
+- **Repository Intelligence:** JavaParser for AST/program structure, JGraphT for dependency relationships, Repository Index for unified querying
+- **Evidence Engine:** Structured evidence model, finding validation
 
-**Repository Intelligence:**
-- JavaParser for AST/program structure
-- JGraphT for dependency relationships
-- Repository Index for unified querying
+**TIER 2 — MAJOR AI SUBSYSTEM**
+- **RAG:** Embeddings, Qdrant, hybrid retrieval (vector + lexical + metadata/symbol + dependency-aware), reranking, context assembly, agentic retrieval, RAG evaluation and ablation
 
-**RAG:**
-- Embeddings
-- Qdrant
-- Hybrid retrieval (vector + lexical + metadata/symbol + dependency-aware)
-- Reranking
-- Context assembly
-- RAG evaluation and ablation
+**TIER 3 — CONTROLLED ENGINEERING ACTION**
+- **Remediation:** OpenRewrite for deterministic Java/Spring transformations where appropriate, AST-aware transformation, AI-generated targeted patches only when deterministic transformation is insufficient
+- **Execution:** Docker sandbox, controlled build/test execution, resource limits, restricted filesystem/network access
+- **Verification:** Build, tests, static analysis, diff validation, bounded repair, rollback
+- **Planning:** Engineering planning, human approval
 
-**Agentic AI:**
-- One adaptive primary agent
-- Tool calling
-- Structured agent state
-- Persisted decision/engineering traces
+**TIER 4 — SUPPORTING PRODUCT INFRASTRUCTURE**
+- **Database:** MySQL for application state (repositories, investigations, agent traces, findings, evidence, plans, approvals, executions, verification results, evaluation results) - treated as supporting infrastructure, NOT a major project focus
+- **Security:** Spring Security, authentication/authorization, repository isolation, path traversal protection, secret filtering, prompt-injection defenses, unsafe command protection
+- **Frontend:** React with SSE for agent status streaming
+- **CI/CD:** Git, GitHub, GitHub Actions, Pull Requests, branch protection, automated quality gates
+- **Testing:** JUnit 5, Mockito, Testcontainers
 
-**MCP:**
-- Focused MCP server/interface for tool interoperability
+**TIER 5 — OPTIONAL / ONLY IF TIME REMAINS**
+- **MCP:** Focused MCP server/interface exposing only useful VoxCode capabilities/tools (repository inspection, AST analysis, dependency analysis, retrieval, build, test, verification) - NOT a separate architecture or ecosystem
 
-**Remediation:**
-- OpenRewrite for deterministic Java/Spring transformations where appropriate
-- AI-generated targeted patches only when deterministic transformation is insufficient
-
-**Execution:**
-- Docker sandbox
-- Controlled build/test execution
-- Resource limits
-- Restricted filesystem/network access
-
-**Database:**
-- MySQL for application state, findings, plans, approvals, traces, reports
-
-**Security:**
-- Spring Security
-- Authentication/authorization
-- Repository isolation
-- Path traversal protection
-- Secret filtering
-- Prompt-injection defenses
-- Unsafe command protection
-
-**Testing:**
-- JUnit 5
-- Mockito
-- Testcontainers
-
-**Frontend:**
-- React
-
-**CI/CD:**
-- Git
-- GitHub
-- GitHub Actions
-- Pull Requests
-- Branch protection
-- Automated quality gates
+**EXCLUDED TECHNOLOGIES**
+- Redis, Kafka, Kubernetes, Microservices, Distributed service architecture, Complex caching, Complex messaging infrastructure, Custom distributed workflow engines, Huge MCP ecosystem, Multi-agent swarm architecture, Foundation-model training, Custom LLM, Generic multi-language support, Full IDE replacement, Unlimited autonomous coding, Complex voice infrastructure, Arbitrary feature generation
 
 ## Intelligence Boundaries
 
@@ -211,20 +173,11 @@ VoxCode follows a professional Git workflow:
 
 ## Technology Protection
 
-VoxCode does NOT include:
-- Kafka
-- Kubernetes
-- Redis
-- Microservices
-- GraphRAG
-- Multi-agent systems
-- Custom LLM
-- Foundation model training
-- Full IDE replacement
-- Autonomous production deployment
-- Unlimited repair loops
-- Huge MCP ecosystem
-- Generic multi-language support
-- General-purpose coding assistant functionality
+**EXCLUDED TECHNOLOGIES:**
+- Redis, Kafka, Kubernetes, Microservices, Distributed service architecture, Complex caching, Complex messaging infrastructure, Custom distributed workflow engines, Huge MCP ecosystem, Multi-agent swarm architecture, Foundation-model training, Custom LLM, Generic multi-language support, Full IDE replacement, Unlimited autonomous coding, Complex voice infrastructure, Arbitrary feature generation
 
-Every technology has a direct role in: Retrieve → Investigate → Decide → Act → Verify
+**Database Constraint:** MySQL/JPA/Hibernate are supporting infrastructure for Agentic AI state persistence. No complex database optimization, advanced SQL engineering, database sharding, complicated caching architecture, or unnecessary database abstractions.
+
+**MCP Constraint:** MCP is a focused tool interface for interoperability. Do NOT create multiple MCP servers, MCP microservices, dozens of MCP tools, or an MCP ecosystem. Use MCP only where it provides genuine architectural value for tool interoperability.
+
+**Technology Priority Rule:** Every technology must have a clear role in Retrieve → Investigate → Decide → Act → Verify → Evaluate. If a technology does not strengthen this loop, it should NOT be added.

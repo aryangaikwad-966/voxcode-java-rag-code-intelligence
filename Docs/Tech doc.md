@@ -146,6 +146,38 @@ The most important engineering rule:
 
 # 4. Technology Stack
 
+## Technology Priority Tiers
+
+**TIER 1 — PRIMARY IDENTITY**
+- **Backend:** Java 21, Spring Boot, Maven
+- **Agentic AI:** Spring AI, one adaptive primary agent, tool calling, structured agent state, persisted decision/engineering traces
+- **Repository Intelligence:** JavaParser for AST/program structure, JGraphT for dependency relationships, Repository Index for unified querying
+- **Evidence Engine:** Structured evidence model, finding validation
+
+**TIER 2 — MAJOR AI SUBSYSTEM**
+- **RAG:** Embeddings, Qdrant, hybrid retrieval (vector + lexical + metadata/symbol + dependency-aware), reranking, context assembly, agentic retrieval, RAG evaluation and ablation
+
+**TIER 3 — CONTROLLED ENGINEERING ACTION**
+- **Remediation:** OpenRewrite for deterministic Java/Spring transformations where appropriate, AST-aware transformation, AI-generated targeted patches only when deterministic transformation is insufficient
+- **Execution:** Docker sandbox, controlled build/test execution, resource limits, restricted filesystem/network access
+- **Verification:** Build, tests, static analysis, diff validation, bounded repair, rollback
+- **Planning:** Engineering planning, human approval
+
+**TIER 4 — SUPPORTING PRODUCT INFRASTRUCTURE**
+- **Database:** MySQL for application state (repositories, investigations, agent traces, findings, evidence, plans, approvals, executions, verification results, evaluation results) - treated as supporting infrastructure, NOT a major project focus
+- **Security:** Spring Security, authentication/authorization, repository isolation, path traversal protection, secret filtering, prompt-injection defenses, unsafe command protection
+- **Frontend:** React with SSE for agent status streaming
+- **CI/CD:** Git, GitHub, GitHub Actions, Pull Requests, branch protection, automated quality gates
+- **Testing:** JUnit 5, Mockito, Testcontainers
+
+**TIER 5 — OPTIONAL / ONLY IF TIME REMAINS**
+- **MCP:** Focused MCP server/interface exposing only useful VoxCode capabilities/tools (repository inspection, AST analysis, dependency analysis, retrieval, build, test, verification) - NOT a separate architecture or ecosystem
+
+**EXCLUDED TECHNOLOGIES**
+- Redis, Kafka, Kubernetes, Microservices, Distributed service architecture, Complex caching, Complex messaging infrastructure, Custom distributed workflow engines, Huge MCP ecosystem, Multi-agent swarm architecture, Foundation-model training, Custom LLM, Generic multi-language support, Full IDE replacement, Unlimited autonomous coding, Complex voice infrastructure, Arbitrary feature generation
+
+---
+
 ## 4.1 Backend
 
 | Technology          | Purpose                                   |
@@ -185,7 +217,7 @@ The most important engineering rule:
 
 ## 4.4 Persistence
 
-**MySQL** is the primary application database.
+**MySQL** is the primary application database, treated as supporting infrastructure for Agentic AI state persistence. No complex database optimization, advanced SQL engineering, database sharding, complicated caching architecture, or unnecessary database abstractions.
 
 It stores:
 
@@ -211,7 +243,7 @@ Qdrant is responsible only for vector-based retrieval.
 
 ## 4.5 Frontend
 
-**React**
+**React** with SSE for agent status streaming
 
 Used for:
 
@@ -932,7 +964,7 @@ Write and execute capabilities must never be implicitly granted simply because a
 
 # 22. MCP Strategy
 
-MCP should be included as a **focused tool interface for interoperability**, NOT a separate architecture.
+MCP should be included as a **focused tool interface for interoperability**, NOT a separate architecture. MCP is TIER 5 (OPTIONAL) - only implement if time remains after core Agentic AI, RAG, and Verification capabilities are complete.
 
 The goal is to create a clean tool boundary:
 

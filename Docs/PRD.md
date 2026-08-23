@@ -1557,14 +1557,23 @@ To protect the one-year scope:
 ❌ Foundation-model training
 ❌ Graph RAG
 ❌ Kubernetes
-❌ Kafka without a concrete requirement
-❌ Redis without a concrete requirement
+❌ Kafka
+❌ Redis
+❌ Microservices
+❌ Distributed service architecture
+❌ Complex caching
+❌ Complex messaging infrastructure
+❌ Custom distributed workflow engines
 ❌ Large MCP ecosystem
 ❌ Unrestricted autonomous coding
 ❌ Endless bug categories
 ❌ Unnecessary Python microservices
 ❌ Voice as a core engineering dependency
 ❌ Features that exist only for resume keyword collection
+
+**Database Constraint:** MySQL/JPA/Hibernate are supporting infrastructure for Agentic AI state persistence. No complex database optimization, advanced SQL engineering, database sharding, complicated caching architecture, or unnecessary database abstractions.
+
+**MCP Constraint:** MCP is a focused tool interface for interoperability. Do NOT create multiple MCP servers, MCP microservices, dozens of MCP tools, or an MCP ecosystem. Use MCP only where it provides genuine architectural value for tool interoperability. MCP is OPTIONAL (TIER 5) - only implement if time remains after core Agentic AI, RAG, and Verification capabilities are complete.
 
 **Optional voice interaction may be added only if the core product is already complete and stable.**
 
