@@ -630,6 +630,24 @@ The overview should expose the three intelligence layers:
 
 The user should understand that VoxCode does not rely only on LLM text retrieval.
 
+### Intelligence Boundaries
+
+The UI should communicate the distinct roles of each intelligence layer:
+
+```text
+┌─────────────────────────────────────────────┐
+│ Intelligence Boundaries                     │
+│                                             │
+│  AST               = Structural Truth      │
+│  Dependency Graph    = Relationship Truth   │
+│  RAG                = Semantic Context      │
+│  Tools              = Operational Truth     │
+│  Build/Tests        = Behavioral Truth      │
+└─────────────────────────────────────────────┘
+```
+
+This helps users understand that VoxCode uses the right tool for the right truth.
+
 ---
 
 # 18. Chat / Repository Q&A
@@ -679,7 +697,11 @@ This is one of the **most important screens in VoxCode**.
 │ ↓                    │                                       │
 │ ✓ Dependency Graph   │ PaymentService.java                   │
 │ ↓                    │                                       │
-│ ✓ RAG Retrieval      │ SecurityConfig.java                   │
+│ ✓ Hybrid RAG         │ SecurityConfig.java                   │
+│   ├ Vector Retrieval │                                       │
+│   ├ Lexical Search   │                                       │
+│   ├ Metadata Filter  │                                       │
+│   └ Reranking        │                                       │
 │ ↓                    │                                       │
 │ ● Validation         │                                       │
 └──────────────────────┴───────────────────────────────────────┘
@@ -730,6 +752,36 @@ Finding validated
 The trace should communicate:
 
 > **The agent is deciding what to investigate next.**
+
+### Agent Adaptation Visualization
+
+When evidence changes the investigation path:
+
+```text
+10:31:16
+Evidence contradicts initial hypothesis.
+Updating investigation strategy...
+
+10:31:17
+New hypothesis formed based on contradictory evidence.
+```
+
+### Evidence Insufficiency Detection
+
+When the agent determines more information is needed:
+
+```text
+10:31:18
+Current evidence insufficient for conclusion.
+Requesting additional retrieval...
+
+10:31:19
+Tool → Hybrid RAG Search
+  ├ Vector Retrieval
+  ├ Lexical Search
+  ├ Metadata Filter
+  └ Reranking
+```
 
 ---
 
@@ -838,6 +890,13 @@ Evidence
 
 
 ▾ RAG Evidence
+
+  Hybrid Retrieval Results:
+  ├ Vector Retrieval: 85% similarity
+  ├ Lexical Search: "authorization endpoint"
+  ├ Metadata Filter: @RestController methods
+  ├ Dependency-Aware: Related security configs
+  └ Reranking: Reordered by relevance
 
   security.md
   Section: Endpoint Authorization
