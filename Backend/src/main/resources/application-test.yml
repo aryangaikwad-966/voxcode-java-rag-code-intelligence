@@ -16,3 +16,7 @@ logging:
   level:
     root: INFO
     com.example.VoxCode: DEBUG
+
+voxcode:
+  workspace:
+    base-dir: ${java.io.tmpdir}/voxcode_test_workspaces

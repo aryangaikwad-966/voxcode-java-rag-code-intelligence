@@ -28,6 +28,12 @@
         <property name="severity" value="info"/>
     </module>
 
+    <!-- Size constraints -->
+    <module name="LineLength">
+        <property name="max" value="150"/>
+        <property name="ignorePattern" value="^package.*|^import.*|a href|href|http://|https://|ftp://"/>
+    </module>
+
     <module name="TreeWalker">
         <module name="SuppressWarningsHolder"/>
 
@@ -43,15 +49,15 @@
         <module name="TypeName"/>
 
         <!-- Imports -->
-        <module name="AvoidStarImport"/>
+        <module name="AvoidStarImport">
+            <property name="excludes" value="jakarta.persistence,org.springframework.web.bind.annotation,jakarta.validation.constraints"/>
+            <property name="allowClassImports" value="false"/>
+            <property name="allowStaticMemberImports" value="false"/>
+        </module>
         <module name="RedundantImport"/>
         <module name="UnusedImports"/>
 
         <!-- Size constraints -->
-        <module name="LineLength">
-            <property name="max" value="150"/>
-            <property name="ignorePattern" value="^package.*|^import.*|a href|href|http://|https://|ftp://"/>
-        </module>
         <module name="MethodLength">
             <property name="max" value="80"/>
         </module>

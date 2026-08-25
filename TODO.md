@@ -11,16 +11,16 @@
 - [x] VXC-002 — Establish local environment
 - [x] VXC-010 — Configuration Management and Logging
 - [x] VXC-011 — Database and Migrations
+- [x] VXC-020 — GitHub Actions Core Pipeline
+- [x] VXC-030 — Repository Ingestion & Validation
 
 ### In Progress Tasks
 
 ### Next Tasks
-- [ ] VXC-020 — GitHub Actions Core Pipeline
-- [ ] VXC-030 — Repository Ingestion & Validation
 
 ### Overall Progress
 **1 / 28 phases completed** (Phase 0 complete, Phase 1 in progress)  
-**3 / 34 VXC tasks completed** (8.8% complete)  
+**5 / 34 VXC tasks completed** (14.7% complete)  
 **Phase 0:** 2/2 tasks complete (100%)  
 **Phase 1:** 1/2 tasks complete (50%) - VXC-010 complete, VXC-011 next
 
