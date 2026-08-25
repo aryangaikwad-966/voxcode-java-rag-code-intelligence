@@ -1,0 +1,120 @@
+name: VoxCode CI Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+permissions:
+  contents: read
+
+env:
+  JAVA_VERSION: '21'
+  JAVA_DISTRIBUTION: 'temurin'
+
+jobs:
+  build-and-unit-test:
+    name: Build & Unit Tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Backend
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Java ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: ${{ env.JAVA_DISTRIBUTION }}
+          cache: maven
+
+      - name: Build and run unit tests
+        run: ./mvnw clean verify -Dspring.profiles.active=test -DskipITs=true --batch-mode --no-transfer-progress
+
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-test-reports
+          path: Backend/target/surefire-reports/
+          retention-days: 14
+
+  integration-test:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+    needs: build-and-unit-test
+    defaults:
+      run:
+        working-directory: Backend
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: voxcode_test_db
+          MYSQL_USER: voxcode_user
+          MYSQL_PASSWORD: voxcode_pass
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Java ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: ${{ env.JAVA_DISTRIBUTION }}
+          cache: maven
+
+      - name: Run integration tests
+        run: ./mvnw verify -Dspring.profiles.active=test --batch-mode --no-transfer-progress
+        env:
+          SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/voxcode_test_db?allowPublicKeyRetrieval=true&useSSL=false
+          SPRING_DATASOURCE_DRIVER_CLASS_NAME: com.mysql.cj.jdbc.Driver
+          SPRING_DATASOURCE_USERNAME: voxcode_user
+          SPRING_DATASOURCE_PASSWORD: voxcode_pass
+
+      - name: Upload integration test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: integration-test-reports
+          path: Backend/target/surefire-reports/
+          retention-days: 14
+
+  static-analysis:
+    name: Static Analysis
+    runs-on: ubuntu-latest
+    needs: build-and-unit-test
+    defaults:
+      run:
+        working-directory: Backend
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Java ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: ${{ env.JAVA_DISTRIBUTION }}
+          cache: maven
+
+      - name: Run Checkstyle
+        run: ./mvnw checkstyle:check --batch-mode --no-transfer-progress
+
+      - name: Run SpotBugs
+        run: ./mvnw compile spotbugs:check --batch-mode --no-transfer-progress

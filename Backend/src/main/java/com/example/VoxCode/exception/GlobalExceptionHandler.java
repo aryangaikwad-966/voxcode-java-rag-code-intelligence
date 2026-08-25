@@ -5,13 +5,11 @@ import com.example.VoxCode.dto.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -63,6 +61,30 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
+                .body(ApiResponse.error(ex.getMessage()));
+    }
+
+    @ExceptionHandler(com.example.VoxCode.exception.ResourceNotFoundException.class)
+    public ResponseEntity<ApiResponse<Void>> handleResourceNotFoundException(
+            com.example.VoxCode.exception.ResourceNotFoundException ex,
+            WebRequest request
+    ) {
+        log.warn("Resource not found: {}", ex.getMessage());
+
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(ApiResponse.error(ex.getMessage()));
+    }
+
+    @ExceptionHandler(com.example.VoxCode.exception.RepositoryIngestionException.class)
+    public ResponseEntity<ApiResponse<Void>> handleRepositoryIngestionException(
+            com.example.VoxCode.exception.RepositoryIngestionException ex,
+            WebRequest request
+    ) {
+        log.error("Repository ingestion failed: {}", ex.getMessage());
+
+        return ResponseEntity
+                .status(HttpStatus.UNPROCESSABLE_ENTITY)
                 .body(ApiResponse.error(ex.getMessage()));
     }
 
