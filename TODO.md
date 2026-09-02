@@ -396,7 +396,7 @@ CI:
 
 ## Phase 4 — AST Intelligence
 
-### [ ] VXC-040 — JavaParser Integration
+### [x] VXC-040 — JavaParser Integration
 Priority: P0
 Phase: 4
 Dependencies: VXC-030
