@@ -328,6 +328,12 @@ public class AstAnalysisService {
                 .map(AnnotationExpr::getNameAsString)
                 .toList();
 
+        List<String> methodCalls = new ArrayList<>();
+        method.findAll(com.github.javaparser.ast.expr.MethodCallExpr.class).forEach(mc -> {
+            // Get the name of the method being called (note: this is just the simple name, not the FQN)
+            methodCalls.add(mc.getNameAsString());
+        });
+
         int startLine = method.getBegin().map(p -> p.line).orElse(0);
         int endLine = method.getEnd().map(p -> p.line).orElse(0);
 
@@ -337,6 +343,7 @@ public class AstAnalysisService {
                 .parameterTypes(paramTypes)
                 .parameterNames(paramNames)
                 .annotations(annotations)
+                .methodCalls(methodCalls)
                 .accessModifier(extractAccessModifier(method))
                 .isStatic(method.isStatic())
                 .isAbstract(method.isAbstract())

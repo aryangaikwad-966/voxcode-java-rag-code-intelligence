@@ -22,6 +22,7 @@ public class MethodInfo {
     private List<String> parameterTypes;
     private List<String> parameterNames;
     private List<String> annotations;
+    private List<String> methodCalls;
     private String accessModifier;
     private boolean isStatic;
     private boolean isAbstract;

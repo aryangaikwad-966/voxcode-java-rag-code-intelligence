@@ -426,7 +426,7 @@ CI:
 
 ## Phase 5 — Dependency Graph
 
-### [ ] VXC-050 — JGraphT Integration
+### [x] VXC-050 — JGraphT Integration
 Priority: P0
 Phase: 5
 Dependencies: VXC-040
