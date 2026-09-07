@@ -111,7 +111,9 @@ public class DependencyGraphService {
                     for (String calledMethodName : methodInfo.getMethodCalls()) {
                         // Find any method node in the lookup with this name (naive resolution for now)
                         for (DependencyNode possibleTarget : nodeLookup.values()) {
-                            if (possibleTarget.getType() == DependencyNode.NodeType.METHOD && possibleTarget.getName().equals(calledMethodName)) {
+                            if (possibleTarget.getType() == DependencyNode.NodeType.METHOD
+                                    && possibleTarget.getName().equals(calledMethodName)
+                                    && !possibleTarget.getId().equals(methodNode.getId())) {
                                 graph.addEdge(methodNode, possibleTarget, new DependencyEdge(DependencyEdge.EdgeType.CALLS));
                             }
                         }

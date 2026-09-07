@@ -2,8 +2,8 @@
 
 ## Current Project Status
 
-**Current Phase:** Phase 1 — Backend Engineering Foundation  
-**Current Task:** VXC-020 — GitHub Actions Core Pipeline
+**Current Phase:** Phase 6 — Repository Index  
+**Current Task:** VXC-070 — RAG Pipeline Setup
 **Current Task Status:** NOT STARTED  
 
 ### Completed Tasks
@@ -13,16 +13,24 @@
 - [x] VXC-011 — Database and Migrations
 - [x] VXC-020 — GitHub Actions Core Pipeline
 - [x] VXC-030 — Repository Ingestion & Validation
+- [x] VXC-040 — JavaParser Integration
+- [x] VXC-050 — JGraphT Integration
+- [x] VXC-060 — Structural and Semantic Indexing Layer
 
 ### In Progress Tasks
 
 ### Next Tasks
+- [ ] VXC-070 — RAG Pipeline Setup
 
 ### Overall Progress
-**1 / 28 phases completed** (Phase 0 complete, Phase 1 in progress)  
-**5 / 34 VXC tasks completed** (14.7% complete)  
+**1 / 28 phases completed** (Phase 0 complete, Phase 1 complete)  
+**8 / 34 VXC tasks completed** (23.5% complete)  
 **Phase 0:** 2/2 tasks complete (100%)  
-**Phase 1:** 1/2 tasks complete (50%) - VXC-010 complete, VXC-011 next
+**Phase 1:** 2/2 tasks complete (100%)  
+**Phase 2:** 1/1 tasks complete (100%)  
+**Phase 3:** 1/1 tasks complete (100%)  
+**Phase 4:** 1/1 tasks complete (100%)  
+**Phase 5:** 1/1 tasks complete (100%)
 
 ### Status Rules
 
@@ -45,12 +53,12 @@ The next task is determined from the existing dependency order in TODO.md. Do NO
 | Phase | Area | Status |
 |---|---|---|
 | 0 | Repository / Project Setup | COMPLETE |
-| 1 | Backend Engineering Foundation (2 tasks) | IN PROGRESS |
-| 2 | CI/CD (1 task) | NOT STARTED |
-| 3 | Repository Ingestion / Workspaces | NOT STARTED |
-| 4 | AST Intelligence | NOT STARTED |
-| 5 | Dependency Graph | NOT STARTED |
-| 6 | Repository Index | NOT STARTED |
+| 1 | Backend Engineering Foundation (2 tasks) | COMPLETE |
+| 2 | CI/CD (1 task) | COMPLETE |
+| 3 | Repository Ingestion / Workspaces | COMPLETE |
+| 4 | AST Intelligence | COMPLETE |
+| 5 | Dependency Graph | COMPLETE |
+| 6 | Repository Index | COMPLETE |
 | 7 | Hybrid Repository-Aware RAG | NOT STARTED |
 | 8 | RAG Evaluation | NOT STARTED |
 | 9 | Agent Tools | NOT STARTED |
@@ -331,7 +339,7 @@ CI:
 
 ## Phase 2 — CI/CD
 
-### [ ] VXC-020 — GitHub Actions Core Pipeline
+### [x] VXC-020 — GitHub Actions Core Pipeline
 Priority: P0
 Phase: 2
 Dependencies: VXC-011
@@ -366,7 +374,7 @@ CI:
 
 ## Phase 3 — Repository Ingestion/Workspaces
 
-### [ ] VXC-030 — Repository Ingestion & Validation
+### [x] VXC-030 — Repository Ingestion & Validation
 Priority: P0
 Phase: 3
 Dependencies: VXC-011
@@ -455,7 +463,7 @@ CI:
 
 ## Phase 6 — Repository Index
 
-### [ ] VXC-060 — Structural and Semantic Indexing Layer
+### [x] VXC-060 — Structural and Semantic Indexing Layer
 Priority: P0
 Phase: 6
 Dependencies: VXC-050
