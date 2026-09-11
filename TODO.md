@@ -492,7 +492,7 @@ CI:
 
 ## Phase 7 — Hybrid Repository-Aware RAG
 
-### [ ] VXC-070 — RAG Pipeline Setup
+### [/] VXC-070 — RAG Pipeline Setup
 Priority: P1
 Phase: 7
 Dependencies: VXC-002, VXC-060

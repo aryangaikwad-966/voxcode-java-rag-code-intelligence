@@ -20,3 +20,9 @@ logging:
 voxcode:
   workspace:
     base-dir: ${java.io.tmpdir}/voxcode_test_workspaces
+  rag:
+    top-k: 5
+    max-context-tokens: 2000
+    min-similarity-score: 0.0
+    qdrant:
+      enabled: false

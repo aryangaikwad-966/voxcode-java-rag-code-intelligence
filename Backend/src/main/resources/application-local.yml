@@ -25,3 +25,12 @@ logging:
 voxcode:
   workspace:
     base-dir: ${VOXCODE_WORKSPACE_DIR:/tmp/voxcode/workspaces}
+  rag:
+    top-k: 10
+    max-context-tokens: 4000
+    min-similarity-score: 0.0
+    qdrant:
+      enabled: ${VOXCODE_QDRANT_ENABLED:false}
+      host: ${VOXCODE_QDRANT_HOST:localhost}
+      grpc-port: ${VOXCODE_QDRANT_GRPC_PORT:6334}
+      collection: ${VOXCODE_QDRANT_COLLECTION:voxcode_chunks}
