@@ -93,7 +93,7 @@ public class DocumentParserService {
      */
     public List<CodeChunk> parseFile(Long repositoryId, Path workspacePath, Path file) throws IOException {
         String relativePath = workspacePath.relativize(file).toString().replace('\\', '/');
-        String fileName = file.getFileName().toString().toLowerCase();
+        String fileName = fileName(file, relativePath).toLowerCase();
 
         if (fileName.endsWith(".java")) {
             return parseJavaFile(repositoryId, relativePath, file);
@@ -109,7 +109,8 @@ public class DocumentParserService {
     private List<CodeChunk> parseJavaFile(Long repositoryId, String relativePath, Path file) throws IOException {
         List<CodeChunk> chunks = new ArrayList<>();
         String content = Files.readString(file, StandardCharsets.UTF_8);
-        boolean isTest = relativePath.contains("/test/") || file.getFileName().toString().endsWith("Test.java");
+        String currentFileName = fileName(file, relativePath);
+        boolean isTest = relativePath.contains("/test/") || currentFileName.endsWith("Test.java");
         DocumentType docType = isTest ? DocumentType.TEST : DocumentType.SOURCE_CODE;
 
         ParseResult<CompilationUnit> parseResult = javaParser.parse(content);
@@ -308,6 +309,11 @@ public class DocumentParserService {
         return fileName.endsWith(".yml") || fileName.endsWith(".yaml")
                 || fileName.endsWith(".properties") || fileName.equals("pom.xml")
                 || fileName.endsWith(".json") || fileName.endsWith(".xml");
+    }
+
+    private String fileName(Path file, String fallback) {
+        Path leaf = file.getFileName();
+        return leaf != null ? leaf.toString() : fallback;
     }
 
     private String generateId(Long repoId, String filePath, int startLine, String content) {
