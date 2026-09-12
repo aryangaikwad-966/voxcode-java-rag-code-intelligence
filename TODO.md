@@ -2,9 +2,9 @@
 
 ## Current Project Status
 
-**Current Phase:** Phase 6 — Repository Index  
-**Current Task:** VXC-070 — RAG Pipeline Setup
-**Current Task Status:** NOT STARTED  
+**Current Phase:** Phase 8 — RAG Evaluation
+**Current Task:** VXC-080 — Retrieval Benchmarking
+**Current Task Status:** IN PROGRESS
 
 ### Completed Tasks
 - [x] VXC-001 — Initialize backend repository
@@ -18,19 +18,22 @@
 - [x] VXC-060 — Structural and Semantic Indexing Layer
 
 ### In Progress Tasks
+- [/] VXC-080 — Retrieval Benchmarking
 
 ### Next Tasks
-- [ ] VXC-070 — RAG Pipeline Setup
+- [ ] VXC-090 — Core Agent Tools
 
 ### Overall Progress
-**1 / 28 phases completed** (Phase 0 complete, Phase 1 complete)  
-**8 / 34 VXC tasks completed** (23.5% complete)  
+**8 / 28 phases completed** (Phases 0–7 complete)
+**9 / 34 VXC tasks completed** (26.5% complete)
 **Phase 0:** 2/2 tasks complete (100%)  
 **Phase 1:** 2/2 tasks complete (100%)  
 **Phase 2:** 1/1 tasks complete (100%)  
 **Phase 3:** 1/1 tasks complete (100%)  
 **Phase 4:** 1/1 tasks complete (100%)  
 **Phase 5:** 1/1 tasks complete (100%)
+**Phase 6:** 1/1 tasks complete (100%)
+**Phase 7:** 1/1 tasks complete (100%)
 
 ### Status Rules
 
@@ -59,8 +62,8 @@ The next task is determined from the existing dependency order in TODO.md. Do NO
 | 4 | AST Intelligence | COMPLETE |
 | 5 | Dependency Graph | COMPLETE |
 | 6 | Repository Index | COMPLETE |
-| 7 | Hybrid Repository-Aware RAG | NOT STARTED |
-| 8 | RAG Evaluation | NOT STARTED |
+| 7 | Hybrid Repository-Aware RAG | COMPLETE |
+| 8 | RAG Evaluation | IN PROGRESS |
 | 9 | Agent Tools | NOT STARTED |
 | 10 | MCP Tool Interface | NOT STARTED |
 | 11 | Adaptive Investigation Agent | NOT STARTED |
@@ -492,7 +495,7 @@ CI:
 
 ## Phase 7 — Hybrid Repository-Aware RAG
 
-### [/] VXC-070 — RAG Pipeline Setup
+### [x] VXC-070 — RAG Pipeline Setup
 Priority: P1
 Phase: 7
 Dependencies: VXC-002, VXC-060
