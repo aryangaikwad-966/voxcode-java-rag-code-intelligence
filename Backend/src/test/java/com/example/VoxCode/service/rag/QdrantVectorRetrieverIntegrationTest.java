@@ -43,11 +43,13 @@ class QdrantVectorRetrieverIntegrationTest {
 
         qdrantClient = new QdrantClient(QdrantGrpcClient.newBuilder(
                 qdrant.getHost(), qdrant.getMappedPort(6334), false).build());
-        VectorStore vectorStore = new QdrantVectorStore(
+        QdrantVectorStore qdrantVectorStore = new QdrantVectorStore(
                 qdrantClient,
                 "voxcode_test_" + UUID.randomUUID().toString().replace("-", ""),
                 new DeterministicEmbeddingModel(),
                 true);
+        qdrantVectorStore.afterPropertiesSet();
+        VectorStore vectorStore = qdrantVectorStore;
         vectorRetriever = new VectorRetriever(vectorStore);
     }
 
