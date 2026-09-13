@@ -6,6 +6,7 @@ import java.util.Set;
 
 import org.springframework.stereotype.Service;
 
+import com.example.VoxCode.dto.rag.AssembledContext;
 import com.example.VoxCode.dto.rag.CodeChunk;
 import com.example.VoxCode.dto.rag.ScoredChunk;
 import com.example.VoxCode.service.rag.RagService;
@@ -23,8 +24,18 @@ public class RetrievalEvaluationService {
     }
 
     public RetrievalEvaluationMetrics evaluate(RetrievalBenchmarkCase benchmarkCase, int k) {
+        return evaluate(benchmarkCase, k, benchmarkCase.maxContextTokens());
+    }
+
+    public RetrievalEvaluationMetrics evaluate(
+            RetrievalBenchmarkCase benchmarkCase,
+            int k,
+            int maxContextTokens) {
         if (k <= 0) {
             throw new IllegalArgumentException("Evaluation k must be positive");
+        }
+        if (maxContextTokens <= 0) {
+            throw new IllegalArgumentException("Evaluation context token budget must be positive");
         }
 
         long startedAt = System.nanoTime();
@@ -47,6 +58,22 @@ public class RetrievalEvaluationService {
         double idealRelevantCount = Math.min(k, relevantIds.size());
         double dcg = discountedGain(topK, relevantIds);
         double idealDcg = idealDiscountedGain(idealRelevantCount);
+        double retrievalRelevance = topK.stream()
+            .filter(result -> relevantIds.contains(result.getChunk().getId()))
+            .mapToDouble(ScoredChunk::getFinalScore)
+            .average()
+            .orElse(0.0);
+        AssembledContext context = ragService.assembleContext(benchmarkCase.query(), maxContextTokens);
+        List<ScoredChunk> contextChunks = context == null || context.getChunks() == null
+            ? Collections.emptyList()
+            : context.getChunks();
+        int relevantContextChunks = (int) contextChunks.stream()
+            .map(ScoredChunk::getChunk)
+            .map(CodeChunk::getId)
+            .filter(relevantIds::contains)
+            .distinct()
+            .count();
+        int contextTokens = context == null ? 0 : context.getEstimatedTokens();
 
         return new RetrievalEvaluationMetrics(
                 benchmarkCase.name(),
@@ -54,7 +81,12 @@ public class RetrievalEvaluationService {
                 relevantRetrieved / (double) k,
                 reciprocalRank,
                 idealDcg == 0.0 ? 0.0 : dcg / idealDcg,
+                retrievalRelevance,
+                relevantContextChunks / (double) relevantIds.size(),
+                relevantContextChunks / (double) Math.max(1, contextTokens),
+                relevantContextChunks == relevantIds.size() ? 1.0 : 0.0,
                 elapsedNanos / 1_000_000.0,
+                contextTokens,
                 topK.size());
     }
 
@@ -76,7 +108,8 @@ public class RetrievalEvaluationService {
             throw new IllegalArgumentException("Evaluation k must be positive");
         }
         if (benchmarkCases == null || benchmarkCases.isEmpty()) {
-            return new RetrievalEvaluationReport(k, Collections.emptyList(), 0.0, 0.0, 0.0, 0.0, 0.0);
+            return new RetrievalEvaluationReport(
+                    k, Collections.emptyList(), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
         }
         List<RetrievalEvaluationMetrics> metrics = evaluateAll(benchmarkCases, k);
         return new RetrievalEvaluationReport(
@@ -86,6 +119,10 @@ public class RetrievalEvaluationService {
                 average(metrics, RetrievalEvaluationMetrics::precisionAtK),
                 average(metrics, RetrievalEvaluationMetrics::meanReciprocalRank),
                 average(metrics, RetrievalEvaluationMetrics::ndcgAtK),
+                average(metrics, RetrievalEvaluationMetrics::retrievalRelevance),
+                average(metrics, RetrievalEvaluationMetrics::contextRelevance),
+                average(metrics, RetrievalEvaluationMetrics::tokenEfficiency),
+                average(metrics, RetrievalEvaluationMetrics::investigationSuccessRate),
                 average(metrics, RetrievalEvaluationMetrics::latencyMillis));
     }
 

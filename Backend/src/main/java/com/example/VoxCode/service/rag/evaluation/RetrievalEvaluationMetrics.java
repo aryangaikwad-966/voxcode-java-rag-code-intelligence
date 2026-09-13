@@ -9,6 +9,11 @@ public record RetrievalEvaluationMetrics(
         double precisionAtK,
         double meanReciprocalRank,
         double ndcgAtK,
+        double retrievalRelevance,
+        double contextRelevance,
+        double tokenEfficiency,
+        double investigationSuccessRate,
         double latencyMillis,
+        int contextTokens,
         int retrievedCount) {
 }
