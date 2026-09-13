@@ -37,6 +37,7 @@ class RetrievalEvaluationServiceTest {
         assertEquals(0.5, metrics.precisionAtK());
         assertEquals(0.5, metrics.meanReciprocalRank());
         assertEquals(1.0 / (Math.log(3.0) / Math.log(2.0)), metrics.ndcgAtK(), 0.000001);
+        assertEquals(0.8, metrics.retrievalRelevance(), 0.000001);
         assertEquals(2, metrics.retrievedCount());
     }
 
@@ -66,6 +67,7 @@ class RetrievalEvaluationServiceTest {
         assertEquals(0.5, report.meanRecallAtK());
         assertEquals(0.5, report.meanPrecisionAtK());
         assertEquals(0.5, report.meanReciprocalRank());
+        assertEquals(true, report.toMarkdown().contains("Investigation success"));
     }
 
     private RagService stub(List<ScoredChunk> results) {

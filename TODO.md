@@ -2,9 +2,9 @@
 
 ## Current Project Status
 
-**Current Phase:** Phase 8 — RAG Evaluation
-**Current Task:** VXC-080 — Retrieval Benchmarking
-**Current Task Status:** IN PROGRESS
+**Current Phase:** Phase 9 — Agent Tools
+**Current Task:** VXC-090 — Core Agent Tools
+**Current Task Status:** NOT STARTED
 
 ### Completed Tasks
 - [x] VXC-001 — Initialize backend repository
@@ -16,16 +16,18 @@
 - [x] VXC-040 — JavaParser Integration
 - [x] VXC-050 — JGraphT Integration
 - [x] VXC-060 — Structural and Semantic Indexing Layer
+- [x] VXC-070 — RAG Pipeline Setup
+- [x] VXC-080 — Retrieval Benchmarking
 
 ### In Progress Tasks
-- [/] VXC-080 — Retrieval Benchmarking
-
-### Next Tasks
 - [ ] VXC-090 — Core Agent Tools
 
+### Next Tasks
+- [ ] VXC-095 — Focused MCP Server (OPTIONAL)
+
 ### Overall Progress
-**8 / 28 phases completed** (Phases 0–7 complete)
-**9 / 34 VXC tasks completed** (26.5% complete)
+**9 / 28 phases completed** (Phases 0–8 complete)
+**11 / 34 VXC tasks completed** (32.4% complete)
 **Phase 0:** 2/2 tasks complete (100%)  
 **Phase 1:** 2/2 tasks complete (100%)  
 **Phase 2:** 1/1 tasks complete (100%)  
@@ -34,6 +36,7 @@
 **Phase 5:** 1/1 tasks complete (100%)
 **Phase 6:** 1/1 tasks complete (100%)
 **Phase 7:** 1/1 tasks complete (100%)
+**Phase 8:** 1/1 tasks complete (100%)
 
 ### Status Rules
 
@@ -63,7 +66,7 @@ The next task is determined from the existing dependency order in TODO.md. Do NO
 | 5 | Dependency Graph | COMPLETE |
 | 6 | Repository Index | COMPLETE |
 | 7 | Hybrid Repository-Aware RAG | COMPLETE |
-| 8 | RAG Evaluation | IN PROGRESS |
+| 8 | RAG Evaluation | COMPLETE |
 | 9 | Agent Tools | NOT STARTED |
 | 10 | MCP Tool Interface | NOT STARTED |
 | 11 | Adaptive Investigation Agent | NOT STARTED |
@@ -534,7 +537,7 @@ CI:
 
 ## Phase 8 — RAG Evaluation
 
-### [ ] VXC-080 — Retrieval Benchmarking
+### [x] VXC-080 — Retrieval Benchmarking
 Priority: P1
 Phase: 8
 Dependencies: VXC-070
