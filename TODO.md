@@ -2,8 +2,8 @@
 
 ## Current Project Status
 
-**Current Phase:** Phase 9 — Agent Tools
-**Current Task:** VXC-090 — Core Agent Tools
+**Current Phase:** Phase 10 — MCP Tool Interface
+**Current Task:** VXC-095 — Focused MCP Server (OPTIONAL)
 **Current Task Status:** NOT STARTED
 
 ### Completed Tasks
@@ -18,16 +18,17 @@
 - [x] VXC-060 — Structural and Semantic Indexing Layer
 - [x] VXC-070 — RAG Pipeline Setup
 - [x] VXC-080 — Retrieval Benchmarking
+- [x] VXC-090 — Core Agent Tools
 
 ### In Progress Tasks
-- [ ] VXC-090 — Core Agent Tools
-
-### Next Tasks
 - [ ] VXC-095 — Focused MCP Server (OPTIONAL)
 
+### Next Tasks
+- [ ] VXC-100 — Core Investigation Loop
+
 ### Overall Progress
-**9 / 28 phases completed** (Phases 0–8 complete)
-**11 / 34 VXC tasks completed** (32.4% complete)
+**10 / 28 phases completed** (Phases 0–9 complete)
+**12 / 34 VXC tasks completed** (35.3% complete)
 **Phase 0:** 2/2 tasks complete (100%)  
 **Phase 1:** 2/2 tasks complete (100%)  
 **Phase 2:** 1/1 tasks complete (100%)  
@@ -37,6 +38,7 @@
 **Phase 6:** 1/1 tasks complete (100%)
 **Phase 7:** 1/1 tasks complete (100%)
 **Phase 8:** 1/1 tasks complete (100%)
+**Phase 9:** 1/1 tasks complete (100%)
 
 ### Status Rules
 
@@ -67,7 +69,8 @@ The next task is determined from the existing dependency order in TODO.md. Do NO
 | 6 | Repository Index | COMPLETE |
 | 7 | Hybrid Repository-Aware RAG | COMPLETE |
 | 8 | RAG Evaluation | COMPLETE |
-| 9 | Agent Tools | NOT STARTED |
+| 9 | Agent Tools | COMPLETE |
+| 10 | MCP Tool Interface | NOT STARTED |
 | 10 | MCP Tool Interface | NOT STARTED |
 | 11 | Adaptive Investigation Agent | NOT STARTED |
 | 12 | Agent Evaluation | NOT STARTED |
@@ -579,7 +582,7 @@ CI:
 
 ## Phase 9 — Agent Tools
 
-### [ ] VXC-090 — Core Agent Tools
+### [x] VXC-090 — Core Agent Tools
 Priority: P0
 Phase: 9
 Dependencies: VXC-060, VXC-070, VXC-080
