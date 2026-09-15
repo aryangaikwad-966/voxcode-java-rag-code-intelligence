@@ -2,8 +2,8 @@
 
 ## Current Project Status
 
-**Current Phase:** Phase 10 — MCP Tool Interface
-**Current Task:** VXC-095 — Focused MCP Server (OPTIONAL)
+**Current Phase:** Phase 12 — Agent Evaluation
+**Current Task:** VXC-110 — Agent Benchmark
 **Current Task Status:** NOT STARTED
 
 ### Completed Tasks
@@ -19,16 +19,17 @@
 - [x] VXC-070 — RAG Pipeline Setup
 - [x] VXC-080 — Retrieval Benchmarking
 - [x] VXC-090 — Core Agent Tools
+- [x] VXC-100 — Core Investigation Loop
 
 ### In Progress Tasks
-- [ ] VXC-095 — Focused MCP Server (OPTIONAL)
+- [ ] VXC-110 — Agent Benchmark
 
 ### Next Tasks
-- [ ] VXC-100 — Core Investigation Loop
+- [ ] VXC-095 — Focused MCP Server (OPTIONAL)
 
 ### Overall Progress
-**10 / 28 phases completed** (Phases 0–9 complete)
-**12 / 34 VXC tasks completed** (35.3% complete)
+**11 / 28 phases completed** (Phases 0–10 complete)
+**13 / 34 VXC tasks completed** (38.2% complete)
 **Phase 0:** 2/2 tasks complete (100%)  
 **Phase 1:** 2/2 tasks complete (100%)  
 **Phase 2:** 1/1 tasks complete (100%)  
@@ -39,6 +40,7 @@
 **Phase 7:** 1/1 tasks complete (100%)
 **Phase 8:** 1/1 tasks complete (100%)
 **Phase 9:** 1/1 tasks complete (100%)
+**Phase 10:** 1/1 tasks complete (100%)
 
 ### Status Rules
 
@@ -71,6 +73,7 @@ The next task is determined from the existing dependency order in TODO.md. Do NO
 | 8 | RAG Evaluation | COMPLETE |
 | 9 | Agent Tools | COMPLETE |
 | 10 | MCP Tool Interface | NOT STARTED |
+| 11 | Adaptive Investigation Agent | IN PROGRESS |
 | 10 | MCP Tool Interface | NOT STARTED |
 | 11 | Adaptive Investigation Agent | NOT STARTED |
 | 12 | Agent Evaluation | NOT STARTED |
@@ -654,10 +657,10 @@ CI:
 
 ## Phase 11 — Adaptive Investigation Agent
 
-### [ ] VXC-100 — Core Investigation Loop
+### [x] VXC-100 — Core Investigation Loop
 Priority: P0
 Phase: 11
-Dependencies: VXC-095
+Dependencies: VXC-090
 
 Goal:
 Implement lightweight classification and the Request → Hypothesis → Tool → Observation → Evidence → Decision → Finding loop.
