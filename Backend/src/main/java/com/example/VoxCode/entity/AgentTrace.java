@@ -9,6 +9,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 
 @Entity
 @Table(name = "agent_traces")
@@ -30,6 +31,13 @@ public class AgentTrace {
     
     @Column(name = "step_description", columnDefinition = "TEXT")
     private String stepDescription;
+    
+    @Column(columnDefinition = "TEXT")
+    private String observation;
+    
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "metadata", columnDefinition = "JSON")
+    private Map<String, Object> metadata;
     
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "input_data", columnDefinition = "JSON")
