@@ -22,7 +22,7 @@
 - [x] VXC-100 — Core Investigation Loop
 
 ### In Progress Tasks
-- [ ] VXC-110 — Agent Benchmark
+- [x] VXC-110 — Agent Benchmark
 
 ### Next Tasks
 - [ ] VXC-095 — Focused MCP Server (OPTIONAL)
@@ -691,7 +691,7 @@ CI:
 
 ## Phase 12 — Agent Evaluation
 
-### [ ] VXC-110 — Agent Benchmark
+### [x] VXC-110 — Agent Benchmark
 Priority: P1
 Phase: 12
 Dependencies: VXC-100
