@@ -194,6 +194,21 @@
                 </executions>
             </plugin>
 
+            <!-- Surefire - Test execution with Mockito inline mocking support on Java 21+ -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <argLine>
+                        --add-opens java.base/java.lang=ALL-UNNAMED
+                        --add-opens java.base/java.lang.reflect=ALL-UNNAMED
+                        --add-opens java.base/java.util=ALL-UNNAMED
+                        --add-opens java.base/java.util.concurrent=ALL-UNNAMED
+                        -XX:+EnableDynamicAgentLoading
+                    </argLine>
+                </configuration>
+            </plugin>
+
             <!-- Checkstyle - Static analysis for code style (VXC-020) -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

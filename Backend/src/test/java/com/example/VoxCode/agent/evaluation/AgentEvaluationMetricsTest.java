@@ -35,7 +35,7 @@ class AgentEvaluationMetricsTest {
         String markdown = metrics.toMarkdown();
         
         assertTrue(markdown.contains("# Agent Evaluation Metrics"));
-        assertTrue(markdown.contains("Success Rate: 80.00%"));
-        assertTrue(markdown.contains("Precision: 0.80"));
+        assertTrue(markdown.contains("**Success Rate:** 80.00%"));
+        assertTrue(markdown.contains("**Precision:** 0.80"));
     }
 }
