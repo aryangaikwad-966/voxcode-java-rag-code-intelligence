@@ -149,6 +149,36 @@ jobs:
       - name: Run retrieval benchmark and ablation tests
         run: ./mvnw -Dapi.version=1.44 -Dtest=RetrievalEvaluationServiceTest,RetrievalBenchmarkDatasetTest,RetrievalBenchmarkRunnerTest,AblationStudyServiceTest test --batch-mode --no-transfer-progress
 
+  agent-evaluation:
+    name: Agent Benchmark Evaluation
+    runs-on: ubuntu-latest
+    needs: build-and-unit-test
+    defaults:
+      run:
+        working-directory: Backend
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Java ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: ${{ env.JAVA_DISTRIBUTION }}
+          cache: maven
+
+      - name: Run agent benchmark unit tests
+        run: ./mvnw -Dapi.version=1.44 -Dtest="AgentBenchmarkCaseTest,AgentBenchmarkDatasetTest,AgentEvaluationMetricsTest,AgentBenchmarkRunnerTest" test --batch-mode --no-transfer-progress
+
+      - name: Upload agent evaluation reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: agent-evaluation-reports
+          path: Backend/target/surefire-reports/
+          retention-days: 14
+
   static-analysis:
     name: Static Analysis
     runs-on: ubuntu-latest

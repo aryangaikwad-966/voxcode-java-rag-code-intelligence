@@ -228,15 +228,18 @@ public class AgentBenchmarkRunner {
         }
         
         // Check if all expected fields are mentioned in the finding or traces
-        String allText = finding.toLowerCase();
+        // Use a StringBuilder to accumulate text, then capture as a final local variable
+        // so it can be safely used inside the lambda expression.
+        StringBuilder textAccumulator = new StringBuilder(finding.toLowerCase());
         for (AgentTrace trace : traces) {
             if (trace.getObservation() != null) {
-                allText += " " + trace.getObservation().toLowerCase();
+                textAccumulator.append(" ").append(trace.getObservation().toLowerCase());
             }
             if (trace.getMetadata() != null) {
-                allText += " " + trace.getMetadata().toString().toLowerCase();
+                textAccumulator.append(" ").append(trace.getMetadata().toString().toLowerCase());
             }
         }
+        final String allText = textAccumulator.toString();
         
         return expectedFields.stream()
                 .allMatch(field -> allText.contains(field.toLowerCase()));
