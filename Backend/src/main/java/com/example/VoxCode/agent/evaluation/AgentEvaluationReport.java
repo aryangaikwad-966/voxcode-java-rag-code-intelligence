@@ -1,7 +1,6 @@
 package com.example.VoxCode.agent.evaluation;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -118,6 +117,9 @@ public record AgentEvaluationReport(
             if (benchmarkCase == null) {
                 throw new IllegalArgumentException("benchmarkCase cannot be null");
             }
+            if (outcome == null) {
+                throw new IllegalArgumentException("outcome cannot be null");
+            }
             if (averageConfidence < 0.0 || averageConfidence > 1.0) {
                 throw new IllegalArgumentException("averageConfidence must be between 0.0 and 1.0");
             }
@@ -134,9 +136,9 @@ public record AgentEvaluationReport(
             sb.append("### Case: ").append(benchmarkCase.caseId()).append("\n\n");
             sb.append("**Description:** ").append(benchmarkCase.description()).append("\n\n");
             sb.append("**User Request:** ").append(benchmarkCase.userRequest()).append("\n\n");
-            sb.append("**Outcome:** ").append(outcome).append("\n\n");
+            sb.append("**Outcome:** ").append(formatOutcome(outcome)).append("\n\n");
             
-            if (outcome != CaseOutcome.FN) {
+            if (outcome != CaseOutcome.FN || errorMessage != null) {
                 sb.append("**Expected Finding:** ").append(benchmarkCase.expectedFinding()).append("\n\n");
                 sb.append("**Actual Finding:** ").append(actualFinding != null ? actualFinding : "None").append("\n\n");
                 sb.append("**Tool Calls:** ").append(toolCallCount).append("\n");
@@ -144,14 +146,21 @@ public record AgentEvaluationReport(
                 sb.append("**Average Confidence:** ").append(String.format("%.2f", averageConfidence)).append("\n");
                 sb.append("**Evidence Valid:** ").append(evidenceValid ? "✅" : "❌").append("\n");
                 sb.append("**Latency:** ").append(latencyMs).append(" ms\n");
-            } else {
-                sb.append("**Status:** ❌ FAILED to find issue\n");
-                if (errorMessage != null) {
-                    sb.append("**Error:** ").append(errorMessage).append("\n");
-                }
+            }
+            
+            if (errorMessage != null) {
+                sb.append("**Error:** ").append(errorMessage).append("\n");
             }
             
             return sb.toString();
+        }
+
+        private String formatOutcome(CaseOutcome outcome) {
+            return switch (outcome) {
+                case TP -> "✅ TRUE POSITIVE";
+                case FP -> "⚠️ FALSE POSITIVE";
+                case FN -> "❌ FALSE NEGATIVE";
+            };
         }
     }
 
