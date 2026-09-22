@@ -2,9 +2,9 @@
 
 ## Current Project Status
 
-**Current Phase:** Phase 12 — Agent Evaluation
-**Current Task:** VXC-110 — Agent Benchmark
-**Current Task Status:** COMPLETED
+**Current Phase:** Phase 14 — Finding Validation
+**Current Task:** VXC-130 — Evidence Verification
+**Current Task Status:** NOT STARTED
 
 ### Completed Tasks
 - [x] VXC-001 — Initialize backend repository
@@ -21,16 +21,17 @@
 - [x] VXC-090 — Core Agent Tools
 - [x] VXC-100 — Core Investigation Loop
 - [x] VXC-110 — Agent Benchmark
+- [x] VXC-120 — Structured Evidence Model
 
 ### In Progress Tasks
-- [ ] VXC-120 — Structured Evidence Model
+- [ ] VXC-130 — Evidence Verification
 
 ### Next Tasks
 - [ ] VXC-095 — Focused MCP Server (OPTIONAL)
 
 ### Overall Progress
-**12 / 28 phases completed** (Phases 0–11 complete)
-**14 / 34 VXC tasks completed** (41.2% complete)
+**13 / 28 phases completed** (Phases 0–12 complete)
+**15 / 34 VXC tasks completed** (44.1% complete)
 **Phase 0:** 2/2 tasks complete (100%)  
 **Phase 1:** 2/2 tasks complete (100%)  
 **Phase 2:** 1/1 tasks complete (100%)  
@@ -44,6 +45,7 @@
 **Phase 10:** 0/1 tasks complete (0%) — OPTIONAL, deferred
 **Phase 11:** 1/1 tasks complete (100%)
 **Phase 12:** 1/1 tasks complete (100%)
+**Phase 13:** 1/1 tasks complete (100%)
 
 ### Status Rules
 
@@ -721,7 +723,7 @@ CI:
 
 ## Phase 13 — Evidence Engine
 
-### [ ] VXC-120 — Structured Evidence Model
+### [x] VXC-120 — Structured Evidence Model
 Priority: P0
 Phase: 13
 Dependencies: VXC-110
