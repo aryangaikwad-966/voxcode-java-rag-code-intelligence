@@ -11,32 +11,37 @@ public record AgentEvaluationMetrics(
     int totalCases,
     
     /**
-     * Number of cases where the agent produced a finding.
+     * Number of true positive cases (correct findings).
      */
-    int successfulCases,
+    int truePositives,
     
     /**
-     * Number of cases where the agent failed to produce a finding.
+     * Number of false positive cases (incorrect findings).
      */
-    int failedCases,
+    int falsePositives,
     
     /**
-     * Investigation success rate (successful / total).
+     * Number of false negative cases (missed findings).
+     */
+    int falseNegatives,
+    
+    /**
+     * Investigation success rate (true positives / total).
      */
     double investigationSuccessRate,
     
     /**
-     * Average number of tool calls per investigation.
+     * Average number of tool calls per successful investigation.
      */
     double averageToolCalls,
     
     /**
-     * Average number of iterations per investigation.
+     * Average number of iterations per successful investigation.
      */
     double averageIterations,
     
     /**
-     * Average confidence score across all decisions.
+     * Average confidence score across all successful decisions.
      */
     double averageConfidence,
     
@@ -51,17 +56,17 @@ public record AgentEvaluationMetrics(
     double evidenceValidityRate,
     
     /**
-     * Precision: proportion of identified findings that were correct.
+     * Finding precision (TP / (TP + FP)).
      */
     double precision,
     
     /**
-     * Recall: proportion of ground truth issues that were identified.
+     * Finding recall (TP / (TP + FN)).
      */
     double recall,
     
     /**
-     * F1 Score: harmonic mean of precision and recall.
+     * F1 score (harmonic mean of precision and recall).
      */
     double f1Score,
     
@@ -79,11 +84,14 @@ public record AgentEvaluationMetrics(
         if (totalCases < 0) {
             throw new IllegalArgumentException("totalCases cannot be negative");
         }
-        if (successfulCases < 0) {
-            throw new IllegalArgumentException("successfulCases cannot be negative");
+        if (truePositives < 0) {
+            throw new IllegalArgumentException("truePositives cannot be negative");
         }
-        if (failedCases < 0) {
-            throw new IllegalArgumentException("failedCases cannot be negative");
+        if (falsePositives < 0) {
+            throw new IllegalArgumentException("falsePositives cannot be negative");
+        }
+        if (falseNegatives < 0) {
+            throw new IllegalArgumentException("falseNegatives cannot be negative");
         }
         if (investigationSuccessRate < 0.0 || investigationSuccessRate > 1.0) {
             throw new IllegalArgumentException("investigationSuccessRate must be between 0.0 and 1.0");
@@ -122,7 +130,7 @@ public record AgentEvaluationMetrics(
      */
     public static AgentEvaluationMetrics empty() {
         return new AgentEvaluationMetrics(
-                0, 0, 0, 0.0, 0.0, 0.0, 0.0, 0, 0.0, 0.0, 0.0, 0.0, 0L, 0.0);
+                0, 0, 0, 0, 0.0, 0.0, 0.0, 0.0, 0, 0.0, 0.0, 0.0, 0.0, 0L, 0.0);
     }
 
     /**
@@ -134,8 +142,9 @@ public record AgentEvaluationMetrics(
                 
                 ## Overview
                 - **Total Cases:** %d
-                - **Successful:** %d
-                - **Failed:** %d
+                - **True Positives:** %d
+                - **False Positives:** %d
+                - **False Negatives:** %d
                 - **Success Rate:** %.2f%%
                 
                 ## Investigation Quality
@@ -156,7 +165,7 @@ public record AgentEvaluationMetrics(
                 - **Total Latency:** %d ms
                 - **Average Latency:** %.2f ms
                 """,
-                totalCases, successfulCases, failedCases, investigationSuccessRate * 100,
+                totalCases, truePositives, falsePositives, falseNegatives, investigationSuccessRate * 100,
                 precision, recall, f1Score,
                 averageToolCalls, averageIterations, averageConfidence,
                 evidenceValidCases, evidenceValidityRate * 100,

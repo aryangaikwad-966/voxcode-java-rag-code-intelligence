@@ -19,6 +19,10 @@ import com.example.VoxCode.entity.Investigation;
 import com.example.VoxCode.repository.AgentTraceRepository;
 import com.example.VoxCode.repository.CodeRepositoryRepository;
 import com.example.VoxCode.repository.InvestigationRepository;
+import com.example.VoxCode.evidence.model.EvidenceItem;
+import com.example.VoxCode.evidence.model.LineRange;
+import com.example.VoxCode.evidence.model.StructuredFinding;
+import com.example.VoxCode.evidence.service.EvidenceEngine;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.RequiredArgsConstructor;
@@ -42,6 +46,7 @@ public class InvestigationAgentService {
     private final InvestigationRepository investigationRepository;
     private final AgentTraceRepository agentTraceRepository;
     private final CodeRepositoryRepository codeRepositoryRepository;
+    private final EvidenceEngine evidenceEngine;
     private final ObjectMapper objectMapper;
 
     /**
@@ -65,10 +70,11 @@ public class InvestigationAgentService {
         // Step 3: Create investigation record
         Investigation investigation = createInvestigation(repositoryId, userRequest, "IN_PROGRESS");
         persistTrace(investigation, "CLASSIFICATION", "Request classified", 
-                Map.of("request", userRequest), Map.of("classification", classification.toString()));
+                    Map.of("request", userRequest), Map.of("classification", classification.toString()));
         
         // Step 4: Run investigation loop
-        InvestigationDecision finalDecision = runInvestigationLoop(investigation, userRequest, classification);
+        java.util.List<com.example.VoxCode.evidence.model.EvidenceItem> collectedEvidence = new java.util.ArrayList<>();
+        InvestigationDecision finalDecision = runInvestigationLoop(investigation, userRequest, classification, collectedEvidence);
         
         // Step 5: Update investigation status based on outcome
         if (finalDecision.sufficientEvidence()) {
@@ -76,6 +82,9 @@ public class InvestigationAgentService {
             investigation.setCompletedAt(LocalDateTime.now());
             persistTrace(investigation, "FINDING", "Investigation completed with finding", 
                     Map.of("finding", finalDecision.preliminaryFinding()), null);
+
+            // Link LLM finding to formal Evidence Model
+            recordFindingFromDecision(investigation, finalDecision, collectedEvidence, classification);
         } else {
             investigation.setStatus("FAILED_INSUFFICIENT_EVIDENCE");
             investigation.setCompletedAt(LocalDateTime.now());
@@ -91,7 +100,9 @@ public class InvestigationAgentService {
     /**
      * Runs the investigation loop: Request → Hypothesis → Tool → Observation → Evidence → Decision → Finding
      */
-    private InvestigationDecision runInvestigationLoop(Investigation investigation, String userRequest, RequestClassification classification) {
+    private InvestigationDecision runInvestigationLoop(Investigation investigation, String userRequest, 
+                                                   RequestClassification classification,
+                                                   java.util.List<EvidenceItem> collectedEvidence) {
         int maxIterations = 10; // Prevent infinite loops
         InvestigationDecision currentDecision = null;
         
@@ -112,6 +123,11 @@ public class InvestigationAgentService {
                     persistTrace(investigation, "TOOL_CALL", "Tool execution", 
                             Map.of("tool", currentDecision.toolName(), "params", currentDecision.toolParameters()),
                             Map.of("result", toolResult));
+
+                    EvidenceItem evidenceItem = buildEvidenceFromTool(currentDecision.toolName(), currentDecision.toolParameters(), toolResult);
+                    if (evidenceItem != null && collectedEvidence != null) {
+                        collectedEvidence.add(evidenceItem);
+                    }
                     break;
                     
                 case MAKE_FINDING:
@@ -277,6 +293,101 @@ public class InvestigationAgentService {
             agentTraceRepository.save(trace);
         } catch (Exception e) {
             log.error("Failed to persist agent trace", e);
+        }
+    }
+
+    /**
+     * Constructs a deterministic EvidenceItem from an executed agent tool call.
+     */
+    private EvidenceItem buildEvidenceFromTool(String toolName, String params, String result) {
+        if (toolName == null) {
+            return null;
+        }
+        Map<String, Object> meta = new java.util.HashMap<>();
+        if (params != null) {
+            meta.put("parameters", params);
+        }
+
+        switch (toolName) {
+            case "findClass":
+            case "findMethod":
+            case "findAnnotation":
+                return new EvidenceItem("AST_NODE", "AstTools." + toolName, result, meta, 1.0);
+            case "findDependencies":
+            case "findDependents":
+                return new EvidenceItem("GRAPH_EDGE", "GraphTools." + toolName, result, meta, 1.0);
+            case "searchSemanticContext":
+                return new EvidenceItem("RAG_CHUNK", "RagTools." + toolName, result, meta, 0.9);
+            case "readFile":
+            case "listFiles":
+                return new EvidenceItem("FILE_CONTENT", "RepositoryTools." + toolName, result, meta, 1.0);
+            default:
+                return new EvidenceItem("TOOL_RESULT", toolName, result, meta, 0.8);
+        }
+    }
+
+    /**
+     * Constructs and records a structured Finding linked with formal evidence.
+     */
+    private void recordFindingFromDecision(Investigation investigation, InvestigationDecision decision, 
+                                           java.util.List<EvidenceItem> evidenceItems, RequestClassification classification) {
+        try {
+            Long repoId = investigation.getRepository() != null ? investigation.getRepository().getId() : 1L;
+            String findingText = decision.preliminaryFinding() != null ? decision.preliminaryFinding() : "Issue detected";
+            
+            String targetClass = "UnknownClass";
+            String filePath = "src/main/java/Unknown.java";
+            LineRange lineRange = LineRange.of(1, 1);
+            String issueType = classification != null ? classification.name() : "CODE_ISSUE";
+
+            // Extract verifiable metadata if present in collected evidence items
+            for (EvidenceItem item : evidenceItems) {
+                if (item.metadata() != null) {
+                    if (item.metadata().get("fullyQualifiedName") != null) {
+                        targetClass = item.metadata().get("fullyQualifiedName").toString();
+                    } else if (item.metadata().get("simpleName") != null) {
+                        targetClass = item.metadata().get("simpleName").toString();
+                    }
+                    if (item.metadata().get("filePath") != null) {
+                        filePath = item.metadata().get("filePath").toString();
+                    }
+                    if (item.metadata().get("startLine") instanceof Number start && item.metadata().get("endLine") instanceof Number end) {
+                        lineRange = LineRange.of(start.intValue(), Math.max(start.intValue(), end.intValue()));
+                    }
+                }
+            }
+
+            java.util.List<EvidenceItem> refs = new java.util.ArrayList<>(evidenceItems);
+            if (refs.isEmpty()) {
+                refs.add(new EvidenceItem("INFERRED", "AgentInference", findingText, 
+                        Map.of("confidence", decision.confidence()), decision.confidence()));
+            }
+
+            String source = "HYBRID";
+            if (!refs.isEmpty() && refs.get(0).evidenceType() != null) {
+                String type = refs.get(0).evidenceType();
+                if (type.contains("AST")) source = "AST";
+                else if (type.contains("GRAPH")) source = "GRAPH";
+                else if (type.contains("RAG")) source = "RAG";
+            }
+
+            StructuredFinding structuredFinding = StructuredFinding.builder()
+                    .repositoryId(repoId)
+                    .filePath(filePath)
+                    .lineRange(lineRange)
+                    .targetClass(targetClass)
+                    .issueType(issueType)
+                    .severity("HIGH")
+                    .title(findingText.length() > 80 ? findingText.substring(0, 77) + "..." : findingText)
+                    .description(findingText)
+                    .evidenceReferences(refs)
+                    .evidenceSource(source)
+                    .validationStatus("PENDING_VALIDATION")
+                    .build();
+
+            evidenceEngine.recordFinding(investigation, structuredFinding);
+        } catch (Exception e) {
+            log.error("Failed to record structured finding for investigation {}", investigation.getId(), e);
         }
     }
 }
