@@ -2,9 +2,9 @@
 
 ## Current Project Status
 
-**Current Phase:** Phase 6 — Repository Index  
-**Current Task:** VXC-070 — RAG Pipeline Setup
-**Current Task Status:** NOT STARTED  
+**Current Phase:** Phase 15 — Engineering Planning
+**Current Task:** VXC-140 — Finding to Engineering Plan
+**Current Task Status:** NOT STARTED
 
 ### Completed Tasks
 - [x] VXC-001 — Initialize backend repository
@@ -16,21 +16,38 @@
 - [x] VXC-040 — JavaParser Integration
 - [x] VXC-050 — JGraphT Integration
 - [x] VXC-060 — Structural and Semantic Indexing Layer
+- [x] VXC-070 — RAG Pipeline Setup
+- [x] VXC-080 — Retrieval Benchmarking
+- [x] VXC-090 — Core Agent Tools
+- [x] VXC-100 — Core Investigation Loop
+- [x] VXC-110 — Agent Benchmark
+- [x] VXC-120 — Structured Evidence Model
+- [x] VXC-130 — Evidence Verification
 
 ### In Progress Tasks
+- [ ] VXC-140 — Finding to Engineering Plan
 
 ### Next Tasks
-- [ ] VXC-070 — RAG Pipeline Setup
+- [ ] VXC-095 — Focused MCP Server (OPTIONAL)
 
 ### Overall Progress
-**1 / 28 phases completed** (Phase 0 complete, Phase 1 complete)  
-**8 / 34 VXC tasks completed** (23.5% complete)  
+**14 / 28 phases completed** (Phases 0–13 complete)
+**16 / 34 VXC tasks completed** (47.1% complete)
 **Phase 0:** 2/2 tasks complete (100%)  
 **Phase 1:** 2/2 tasks complete (100%)  
 **Phase 2:** 1/1 tasks complete (100%)  
 **Phase 3:** 1/1 tasks complete (100%)  
 **Phase 4:** 1/1 tasks complete (100%)  
 **Phase 5:** 1/1 tasks complete (100%)
+**Phase 6:** 1/1 tasks complete (100%)
+**Phase 7:** 1/1 tasks complete (100%)
+**Phase 8:** 1/1 tasks complete (100%)
+**Phase 9:** 1/1 tasks complete (100%)
+**Phase 10:** 0/1 tasks complete (0%) — OPTIONAL, deferred
+**Phase 11:** 1/1 tasks complete (100%)
+**Phase 12:** 1/1 tasks complete (100%)
+**Phase 13:** 1/1 tasks complete (100%)
+**Phase 14:** 1/1 tasks complete (100%)
 
 ### Status Rules
 
@@ -59,12 +76,12 @@ The next task is determined from the existing dependency order in TODO.md. Do NO
 | 4 | AST Intelligence | COMPLETE |
 | 5 | Dependency Graph | COMPLETE |
 | 6 | Repository Index | COMPLETE |
-| 7 | Hybrid Repository-Aware RAG | NOT STARTED |
-| 8 | RAG Evaluation | NOT STARTED |
-| 9 | Agent Tools | NOT STARTED |
-| 10 | MCP Tool Interface | NOT STARTED |
-| 11 | Adaptive Investigation Agent | NOT STARTED |
-| 12 | Agent Evaluation | NOT STARTED |
+| 7 | Hybrid Repository-Aware RAG | COMPLETE |
+| 8 | RAG Evaluation | COMPLETE |
+| 9 | Agent Tools | COMPLETE |
+| 10 | MCP Tool Interface | NOT STARTED (OPTIONAL) |
+| 11 | Adaptive Investigation Agent | COMPLETE |
+| 12 | Agent Evaluation | COMPLETE |
 | 13 | Evidence Engine | NOT STARTED |
 | 14 | Finding Validation | NOT STARTED |
 | 15 | Engineering Planning | NOT STARTED |
@@ -492,7 +509,7 @@ CI:
 
 ## Phase 7 — Hybrid Repository-Aware RAG
 
-### [/] VXC-070 — RAG Pipeline Setup
+### [x] VXC-070 — RAG Pipeline Setup
 Priority: P1
 Phase: 7
 Dependencies: VXC-002, VXC-060
@@ -531,7 +548,7 @@ CI:
 
 ## Phase 8 — RAG Evaluation
 
-### [ ] VXC-080 — Retrieval Benchmarking
+### [x] VXC-080 — Retrieval Benchmarking
 Priority: P1
 Phase: 8
 Dependencies: VXC-070
@@ -573,7 +590,7 @@ CI:
 
 ## Phase 9 — Agent Tools
 
-### [ ] VXC-090 — Core Agent Tools
+### [x] VXC-090 — Core Agent Tools
 Priority: P0
 Phase: 9
 Dependencies: VXC-060, VXC-070, VXC-080
@@ -645,10 +662,10 @@ CI:
 
 ## Phase 11 — Adaptive Investigation Agent
 
-### [ ] VXC-100 — Core Investigation Loop
+### [x] VXC-100 — Core Investigation Loop
 Priority: P0
 Phase: 11
-Dependencies: VXC-095
+Dependencies: VXC-090
 
 Goal:
 Implement lightweight classification and the Request → Hypothesis → Tool → Observation → Evidence → Decision → Finding loop.
@@ -679,7 +696,7 @@ CI:
 
 ## Phase 12 — Agent Evaluation
 
-### [ ] VXC-110 — Agent Benchmark
+### [x] VXC-110 — Agent Benchmark
 Priority: P1
 Phase: 12
 Dependencies: VXC-100
@@ -708,7 +725,7 @@ CI:
 
 ## Phase 13 — Evidence Engine
 
-### [ ] VXC-120 — Structured Evidence Model
+### [x] VXC-120 — Structured Evidence Model
 Priority: P0
 Phase: 13
 Dependencies: VXC-110
@@ -737,7 +754,7 @@ CI:
 
 ## Phase 14 — Finding Validation
 
-### [ ] VXC-130 — Evidence Verification
+### [x] VXC-130 — Evidence Verification
 Priority: P0
 Phase: 14
 Dependencies: VXC-120

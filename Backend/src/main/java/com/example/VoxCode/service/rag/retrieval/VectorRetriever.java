@@ -1,21 +1,24 @@
 package com.example.VoxCode.service.rag.retrieval;
 
-import com.example.VoxCode.dto.rag.CodeChunk;
-import com.example.VoxCode.dto.rag.DocumentType;
-import com.example.VoxCode.dto.rag.RagQuery;
-import com.example.VoxCode.dto.rag.ScoredChunk;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.ai.document.Document;
-import org.springframework.ai.vectorstore.SearchRequest;
-import org.springframework.ai.vectorstore.VectorStore;
-import org.springframework.stereotype.Component;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
+
+import org.springframework.ai.document.Document;
+import org.springframework.ai.vectorstore.SearchRequest;
+import org.springframework.ai.vectorstore.VectorStore;
+import org.springframework.stereotype.Component;
+
+import com.example.VoxCode.dto.rag.CodeChunk;
+import com.example.VoxCode.dto.rag.DocumentType;
+import com.example.VoxCode.dto.rag.RagQuery;
+import com.example.VoxCode.dto.rag.ScoredChunk;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Executes semantic vector similarity search via Spring AI VectorStore (Qdrant / SimpleVectorStore).
@@ -39,7 +42,9 @@ public class VectorRetriever {
 
         List<Document> documents = new ArrayList<>();
         for (CodeChunk chunk : chunks) {
-            documents.add(new Document(chunk.getId(), chunk.getContent(), chunk.toMetadataMap()));
+            Map<String, Object> metadata = normalizeMetadata(chunk.toMetadataMap());
+            metadata.put("chunkId", chunk.getId());
+            documents.add(new Document(toVectorStoreId(chunk.getId()), chunk.getContent(), metadata));
         }
 
         try {
@@ -67,7 +72,7 @@ public class VectorRetriever {
         SearchRequest request = SearchRequest.query(query.getQuery())
                 .withTopK(searchTopK);
         if (query.getRepositoryId() != null) {
-            request = request.withFilterExpression("repositoryId == " + query.getRepositoryId());
+            request = request.withFilterExpression(repositoryFilter(query.getRepositoryId()));
         }
 
         List<Document> matches;
@@ -97,7 +102,8 @@ public class VectorRetriever {
 
         for (int i = 0; i < totalMatches; i++) {
             Document doc = matches.get(i);
-            CodeChunk chunk = chunkLookup != null ? chunkLookup.get(doc.getId()) : null;
+            String chunkId = originalChunkId(doc);
+            CodeChunk chunk = chunkLookup != null ? chunkLookup.get(chunkId) : null;
 
             if (chunk == null) {
                 chunk = reconstructChunkFromDocument(doc);
@@ -169,7 +175,7 @@ public class VectorRetriever {
         }
 
         return CodeChunk.builder()
-                .id(doc.getId())
+            .id(String.valueOf(meta.getOrDefault("chunkId", doc.getId())))
                 .repositoryId(repoId)
                 .documentType(type)
                 .filePath((String) meta.get("filePath"))
@@ -181,5 +187,36 @@ public class VectorRetriever {
                 .content(doc.getContent())
                 .metadata(new HashMap<>(meta))
                 .build();
+    }
+
+    private String originalChunkId(Document document) {
+        Object chunkId = document.getMetadata() == null ? null : document.getMetadata().get("chunkId");
+        return chunkId == null ? document.getId() : String.valueOf(chunkId);
+    }
+
+    private String toVectorStoreId(String chunkId) {
+        return UUID.nameUUIDFromBytes(chunkId.getBytes(java.nio.charset.StandardCharsets.UTF_8)).toString();
+    }
+
+    private Map<String, Object> normalizeMetadata(Map<String, Object> metadata) {
+        Map<String, Object> normalized = new HashMap<>();
+        metadata.forEach((key, value) -> {
+            if (value instanceof Long longValue
+                    && longValue >= Integer.MIN_VALUE && longValue <= Integer.MAX_VALUE) {
+                normalized.put(key, longValue.intValue());
+            } else if (value instanceof Long) {
+                normalized.put(key, String.valueOf(value));
+            } else {
+                normalized.put(key, value);
+            }
+        });
+        return normalized;
+    }
+
+    private String repositoryFilter(Long repositoryId) {
+        if (repositoryId >= Integer.MIN_VALUE && repositoryId <= Integer.MAX_VALUE) {
+            return "repositoryId == " + repositoryId.intValue();
+        }
+        return "repositoryId == '" + repositoryId + "'";
     }
 }
