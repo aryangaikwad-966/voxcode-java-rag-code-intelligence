@@ -1,8 +1,5 @@
 package com.example.VoxCode.evidence.service;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -57,21 +54,22 @@ public class EvidenceEngine {
         // 2. Build Finding entity
         Finding finding = new Finding();
         finding.setInvestigation(investigation);
-        finding.setTitle(structuredFinding.title() != null && !structuredFinding.title().isBlank()
-                ? structuredFinding.title()
-                : structuredFinding.issueType() + " in " + structuredFinding.targetClass());
-        finding.setDescription(structuredFinding.description() != null ? structuredFinding.description() : "");
+        finding.setRepository(investigation.getRepository());
+        finding.setFilePath(structuredFinding.filePath());
+        finding.setLineRange(structuredFinding.lineRange() != null 
+                ? structuredFinding.lineRange().startLine() + "-" + structuredFinding.lineRange().endLine() 
+                : null);
+        finding.setClassName(structuredFinding.targetClass());
+        finding.setMethodName(structuredFinding.targetMethod());
+        finding.setIssueType(structuredFinding.issueType());
         finding.setSeverity(structuredFinding.severity());
-        finding.setCategory(structuredFinding.issueType());
-        finding.setStatus(structuredFinding.validationStatus());
+        finding.setDescription(structuredFinding.description() != null ? structuredFinding.description() : "");
+        finding.setValidationStatus(structuredFinding.validationStatus());
+        finding.setExplanation(structuredFinding.description()); // Use description as explanation for now
 
         try {
-            // Affected files JSON
-            List<String> affectedFiles = List.of(structuredFinding.filePath());
-            finding.setAffectedFiles(objectMapper.writeValueAsString(affectedFiles));
-
-            // Complete structured finding schema JSON stored in evidence_data
-            finding.setEvidenceData(objectMapper.writeValueAsString(structuredFinding));
+            // Complete structured finding schema JSON stored in metadata
+            finding.setMetadata(objectMapper.writeValueAsString(structuredFinding));
         } catch (JsonProcessingException e) {
             throw new IllegalStateException("Failed to serialize finding JSON metadata", e);
         }
@@ -83,13 +81,34 @@ public class EvidenceEngine {
             for (EvidenceItem item : structuredFinding.evidenceReferences()) {
                 Evidence evidence = new Evidence();
                 evidence.setFinding(savedFinding);
+                evidence.setEvidenceSource(item.source());
                 evidence.setEvidenceType(item.evidenceType());
-                evidence.setSource(item.source());
                 evidence.setContent(item.content());
                 if (item.confidenceScore() != null) {
-                    evidence.setConfidenceScore(BigDecimal.valueOf(item.confidenceScore()));
+                    evidence.setConfidence(item.confidenceScore());
                 } else {
-                    evidence.setConfidenceScore(BigDecimal.ONE);
+                    evidence.setConfidence(1.0);
+                }
+
+                // Extract metadata fields
+                if (item.metadata() != null) {
+                    if (item.metadata().containsKey("filePath")) {
+                        evidence.setFilePath((String) item.metadata().get("filePath"));
+                    }
+                    if (item.metadata().containsKey("className")) {
+                        evidence.setClassName((String) item.metadata().get("className"));
+                    }
+                    if (item.metadata().containsKey("methodName")) {
+                        evidence.setMethodName((String) item.metadata().get("methodName"));
+                    }
+                    if (item.metadata().containsKey("annotationName")) {
+                        evidence.setAnnotationName((String) item.metadata().get("annotationName"));
+                    }
+                    if (item.metadata().containsKey("startLine") && item.metadata().containsKey("endLine")) {
+                        int startLine = ((Number) item.metadata().get("startLine")).intValue();
+                        int endLine = ((Number) item.metadata().get("endLine")).intValue();
+                        evidence.setLineRange(startLine + "-" + endLine);
+                    }
                 }
 
                 try {
@@ -203,13 +222,13 @@ public class EvidenceEngine {
     @Transactional(readOnly = true)
     public Optional<StructuredFinding> getStructuredFinding(Long findingId) {
         return findingRepository.findById(findingId).flatMap(finding -> {
-            if (finding.getEvidenceData() == null || finding.getEvidenceData().isBlank()) {
+            if (finding.getMetadata() == null || finding.getMetadata().isBlank()) {
                 return Optional.empty();
             }
             try {
-                return Optional.of(objectMapper.readValue(finding.getEvidenceData(), StructuredFinding.class));
+                return Optional.of(objectMapper.readValue(finding.getMetadata(), StructuredFinding.class));
             } catch (JsonProcessingException e) {
-                log.error("Failed to parse evidence_data for finding {}", findingId, e);
+                log.error("Failed to parse metadata for finding {}", findingId, e);
                 return Optional.empty();
             }
         });

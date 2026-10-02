@@ -83,7 +83,8 @@ public class AgentBenchmarkRunner {
         AgentEvaluationMetrics metrics = new AgentEvaluationMetrics(
                 totalCases,
                 tp,
-                fp + fn,
+                fp,
+                fn,
                 investigationSuccessRate,
                 averageToolCalls,
                 averageIterations,
