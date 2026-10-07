@@ -14,3 +14,17 @@ management:
   endpoint:
     health:
       show-details: always
+
+# Docker Sandbox Configuration (VXC-170)
+sandbox:
+  image: openjdk:21-slim
+  memory:
+    limit: 512m
+  cpu:
+    limit: 1.0
+  timeout:
+    seconds: 300
+
+# Docker Configuration
+docker:
+  host: unix:///var/run/docker.sock
