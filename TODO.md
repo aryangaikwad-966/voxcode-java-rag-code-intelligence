@@ -2,8 +2,8 @@
 
 ## Current Project Status
 
-**Current Phase:** Phase 17 — Bounded Remediation
-**Current Task:** VXC-160 — Bounded Remediation Service
+**Current Phase:** Phase 18 — Docker Sandbox
+**Current Task:** VXC-170 — Isolated Workspace Execution
 **Current Task Status:** NOT STARTED
 
 ### Completed Tasks
@@ -25,17 +25,18 @@
 - [x] VXC-130 — Evidence Verification
 - [x] VXC-140 — Plan Generation
 - [x] VXC-150 — Approval Workflow
+- [x] VXC-160 — Bounded Remediation Service
 
 ### In Progress Tasks
-- [ ] VXC-160 — Bounded Remediation Service
+- [ ] VXC-170 — Isolated Workspace Execution
 
 ### Next Tasks
-- [ ] VXC-160 — Bounded Remediation Service
+- [ ] VXC-170 — Isolated Workspace Execution
 - [ ] VXC-095 — Focused MCP Server (OPTIONAL)
 
 ### Overall Progress
-**16 / 28 phases completed** (Phases 0–15 complete)
-**18 / 34 VXC tasks completed** (52.9% complete)
+**17 / 28 phases completed** (Phases 0–16 complete)
+**19 / 34 VXC tasks completed** (55.9% complete)
 **Phase 0:** 2/2 tasks complete (100%)  
 **Phase 1:** 2/2 tasks complete (100%)  
 **Phase 2:** 1/1 tasks complete (100%)  
@@ -53,6 +54,7 @@
 **Phase 14:** 1/1 tasks complete (100%)
 **Phase 15:** 1/1 tasks complete (100%)
 **Phase 16:** 1/1 tasks complete (100%)
+**Phase 17:** 1/1 tasks complete (100%)
 
 ### Status Rules
 
@@ -847,7 +849,7 @@ CI:
 
 ## Phase 17 — Bounded Remediation
 
-### [ ] VXC-160 — Safe Code Modification
+### [x] VXC-160 — Safe Code Modification
 Priority: P0
 Phase: 17
 Dependencies: VXC-150
