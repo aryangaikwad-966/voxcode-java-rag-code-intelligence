@@ -2,8 +2,8 @@
 
 ## Current Project Status
 
-**Current Phase:** Phase 16 — Human Approval
-**Current Task:** VXC-150 — Approval Workflow
+**Current Phase:** Phase 17 — Bounded Remediation
+**Current Task:** VXC-160 — Bounded Remediation Service
 **Current Task Status:** NOT STARTED
 
 ### Completed Tasks
@@ -24,16 +24,18 @@
 - [x] VXC-120 — Structured Evidence Model
 - [x] VXC-130 — Evidence Verification
 - [x] VXC-140 — Plan Generation
+- [x] VXC-150 — Approval Workflow
 
 ### In Progress Tasks
-- [ ] VXC-150 — Approval Workflow
+- [ ] VXC-160 — Bounded Remediation Service
 
 ### Next Tasks
+- [ ] VXC-160 — Bounded Remediation Service
 - [ ] VXC-095 — Focused MCP Server (OPTIONAL)
 
 ### Overall Progress
-**15 / 28 phases completed** (Phases 0–14 complete)
-**17 / 34 VXC tasks completed** (50.0% complete)
+**16 / 28 phases completed** (Phases 0–15 complete)
+**18 / 34 VXC tasks completed** (52.9% complete)
 **Phase 0:** 2/2 tasks complete (100%)  
 **Phase 1:** 2/2 tasks complete (100%)  
 **Phase 2:** 1/1 tasks complete (100%)  
@@ -50,6 +52,7 @@
 **Phase 13:** 1/1 tasks complete (100%)
 **Phase 14:** 1/1 tasks complete (100%)
 **Phase 15:** 1/1 tasks complete (100%)
+**Phase 16:** 1/1 tasks complete (100%)
 
 ### Status Rules
 
@@ -814,7 +817,7 @@ CI:
 
 ## Phase 16 — Human Approval
 
-### [ ] VXC-150 — Approval Gate
+### [x] VXC-150 — Approval Gate
 Priority: P0
 Phase: 16
 Dependencies: VXC-140
