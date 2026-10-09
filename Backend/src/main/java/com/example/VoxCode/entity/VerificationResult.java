@@ -81,6 +81,13 @@ public class VerificationResult {
     
     @Column(name = "total_files_modified")
     private Integer totalFilesModified = 0;
+
+    /**
+     * Number of repair attempts made against this failed verification.
+     * Bounded by RepairLoopService.MAX_RETRY_ATTEMPTS.
+     */
+    @Column(name = "repair_attempt_count")
+    private Integer repairAttemptCount = 0;
     
     @Column(name = "stdout", columnDefinition = "TEXT")
     private String stdout;
@@ -124,6 +131,14 @@ public class VerificationResult {
                !unexpectedModifications;
     }
     
+    /**
+     * Increments the repair attempt counter and returns the new count.
+     */
+    public int incrementRepairAttemptCount() {
+        this.repairAttemptCount = (this.repairAttemptCount == null ? 0 : this.repairAttemptCount) + 1;
+        return this.repairAttemptCount;
+    }
+
     /**
      * Marks the verification as passed.
      */
