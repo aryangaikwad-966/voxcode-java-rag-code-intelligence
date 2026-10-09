@@ -2,8 +2,8 @@
 
 ## Current Project Status
 
-**Current Phase:** Phase 20 — Limited Repair
-**Current Task:** VXC-190 — Bounded Repair Loop
+**Current Phase:** Phase 21 — Rollback
+**Current Task:** VXC-200 — State Preservation and Recovery
 **Current Task Status:** NOT STARTED
 
 ### Completed Tasks
@@ -28,17 +28,18 @@
 - [x] VXC-160 — Bounded Remediation Service
 - [x] VXC-170 — Isolated Workspace Execution
 - [x] VXC-180 — Executable Verification
+- [x] VXC-190 — Bounded Repair Loop
 
 ### In Progress Tasks
-- [ ] VXC-190 — Bounded Repair Loop
+- [ ] None
 
 ### Next Tasks
-- [ ] VXC-190 — Bounded Repair Loop
+- [ ] VXC-200 — State Preservation and Recovery
 - [ ] VXC-095 — Focused MCP Server (OPTIONAL)
 
 ### Overall Progress
-**19 / 28 phases completed** (Phases 0–18 complete)
-**21 / 34 VXC tasks completed** (61.8% complete)
+**20 / 28 phases completed** (Phases 0–20 complete)
+**22 / 34 VXC tasks completed** (64.7% complete)
 **Phase 0:** 2/2 tasks complete (100%)  
 **Phase 1:** 2/2 tasks complete (100%)  
 **Phase 2:** 1/1 tasks complete (100%)  
@@ -59,6 +60,7 @@
 **Phase 17:** 1/1 tasks complete (100%)
 **Phase 18:** 1/1 tasks complete (100%)
 **Phase 19:** 1/1 tasks complete (100%)
+**Phase 20:** 1/1 tasks complete (100%)
 
 ### Status Rules
 
@@ -953,7 +955,7 @@ CI:
 
 ## Phase 20 — Limited Repair
 
-### [ ] VXC-190 — Bounded Repair Loop
+### [x] VXC-190 — Bounded Repair Loop
 Priority: P1
 Phase: 20
 Dependencies: VXC-180
