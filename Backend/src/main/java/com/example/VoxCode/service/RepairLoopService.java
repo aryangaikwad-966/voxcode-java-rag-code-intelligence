@@ -40,7 +40,6 @@ import java.util.Map;
  */
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class RepairLoopService {
 
     private final VerificationResultRepository verificationResultRepository;
@@ -49,6 +48,35 @@ public class RepairLoopService {
     private final VerificationService verificationService;
     private final ObjectMapper objectMapper;
     private final ChatClient chatClient;
+    private final RollbackService rollbackService;
+
+    public RepairLoopService(
+            VerificationResultRepository verificationResultRepository,
+            RemediationRepository remediationRepository,
+            ExecutionRepository executionRepository,
+            VerificationService verificationService,
+            ObjectMapper objectMapper,
+            ChatClient chatClient,
+            RollbackService rollbackService) {
+        this.verificationResultRepository = verificationResultRepository;
+        this.remediationRepository = remediationRepository;
+        this.executionRepository = executionRepository;
+        this.verificationService = verificationService;
+        this.objectMapper = objectMapper;
+        this.chatClient = chatClient;
+        this.rollbackService = rollbackService;
+    }
+
+    public RepairLoopService(
+            VerificationResultRepository verificationResultRepository,
+            RemediationRepository remediationRepository,
+            ExecutionRepository executionRepository,
+            VerificationService verificationService,
+            ObjectMapper objectMapper,
+            ChatClient chatClient) {
+        this(verificationResultRepository, remediationRepository, executionRepository,
+                verificationService, objectMapper, chatClient, null);
+    }
 
     /**
      * Maximum repair attempts before giving up and triggering rollback.
@@ -116,6 +144,7 @@ public class RepairLoopService {
         if (currentAttempts >= MAX_RETRY_ATTEMPTS) {
             log.warn("Retry budget exhausted for verification result {} (attempts={})",
                     verificationResultId, currentAttempts);
+            triggerRollbackIfConfigured(verificationResult, RollbackService.TRIGGER_REPAIR_BUDGET_EXCEEDED);
             return BUDGET_EXCEEDED;
         }
 
@@ -127,6 +156,7 @@ public class RepairLoopService {
         if (FAILURE_SCOPE_VIOLATION.equals(failureType)) {
             log.warn("Scope violation detected in verification result {} — triggering rollback path",
                     verificationResultId);
+            triggerRollbackIfConfigured(verificationResult, RollbackService.TRIGGER_SCOPE_VIOLATION);
             return SCOPE_EXPANSION_REJECTED;
         }
 
@@ -168,6 +198,7 @@ public class RepairLoopService {
 
             if (SCOPE_EXPANSION_REJECTED.equals(applyStatus)) {
                 log.warn("Repair fix for result {} would expand scope — rejecting", verificationResultId);
+                triggerRollbackIfConfigured(verificationResult, RollbackService.TRIGGER_SCOPE_VIOLATION);
                 return SCOPE_EXPANSION_REJECTED;
             }
 
@@ -196,6 +227,9 @@ public class RepairLoopService {
             } else {
                 log.warn("Repair attempt #{} failed — verification still failing for result {}",
                         attemptNumber, verificationResultId);
+                if (attemptNumber >= MAX_RETRY_ATTEMPTS) {
+                    triggerRollbackIfConfigured(verificationResult, RollbackService.TRIGGER_VERIFICATION_PERMANENT_FAILURE);
+                }
                 return RETRY_FAILED;
             }
 
@@ -203,6 +237,23 @@ public class RepairLoopService {
             log.error("Repair attempt #{} threw an exception for result {}: {}",
                     attemptNumber, verificationResultId, e.getMessage(), e);
             return RETRY_FAILED;
+        }
+    }
+
+    private void triggerRollbackIfConfigured(VerificationResult verificationResult, String triggerReason) {
+        if (rollbackService != null) {
+            try {
+                Plan plan = getPlanFromVerificationResult(verificationResult);
+                if (plan != null) {
+                    Remediation remediation = getRemediationFromVerificationResult(verificationResult, plan);
+                    if (remediation != null) {
+                        rollbackService.rollbackWorkspace(remediation.getId(), triggerReason);
+                    }
+                }
+            } catch (Exception e) {
+                log.error("Failed to trigger automatic rollback for verification result {}: {}",
+                        verificationResult != null ? verificationResult.getId() : null, e.getMessage(), e);
+            }
         }
     }
 
