@@ -31,6 +31,7 @@ public class RemediationService {
     private final ApprovalService approvalService;
     private final AstAnalysisService astAnalysisService;
     private final ObjectMapper objectMapper;
+    private final RollbackService rollbackService;
 
     /**
      * Transformation strategy constants.
@@ -80,6 +81,11 @@ public class RemediationService {
 
         Remediation savedRemediation = remediationRepository.save(remediation);
 
+        // Take snapshot before applying transformations
+        if (rollbackService != null) {
+            rollbackService.takeSnapshot(savedRemediation.getId(), workspacePath);
+        }
+
         try {
             // Apply transformation
             applyTransformation(savedRemediation, plan, workspacePath);
@@ -100,6 +106,9 @@ public class RemediationService {
             log.error("Remediation failed for plan ID {}: {}", planId, e.getMessage(), e);
             savedRemediation.markFailed(e.getMessage());
             remediationRepository.save(savedRemediation);
+            if (rollbackService != null) {
+                rollbackService.rollbackWorkspace(savedRemediation.getId(), RollbackService.TRIGGER_SCOPE_VIOLATION);
+            }
             throw new IllegalStateException("Remediation failed: " + e.getMessage(), e);
         }
 
@@ -341,9 +350,10 @@ public class RemediationService {
      * Performs the actual rollback operation.
      */
     private void performRollback(Remediation remediation) throws Exception {
-        // TODO: Implement actual rollback logic using git or backup
-        // For now, this is a placeholder
         log.info("Performing rollback for remediation ID {}", remediation.getId());
+        if (rollbackService != null) {
+            rollbackService.rollbackWorkspace(remediation.getId(), RollbackService.TRIGGER_MANUAL);
+        }
     }
 
     /**
